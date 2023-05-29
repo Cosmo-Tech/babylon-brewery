@@ -1,0 +1,15 @@
+name: Destroy Cosmo Tech Solution 
+description: This action will destroy all the main resources created by the Babylon apply command
+inputs:
+  confirmation:
+    description: "User should enter confirmation to destroy the solution, such as 'true' for 'yes' or 'false' for 'no'"
+    required: true
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Babylon destroy command
+      if: ${{ inputs.confirmation == 'true'}}
+      run: |
+        babylon destroy
+      shell: bash

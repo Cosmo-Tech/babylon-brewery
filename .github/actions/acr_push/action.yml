@@ -1,0 +1,26 @@
+name: Push simulator image to Azure Container Registry
+description: Push simulator image to Azure Container Registry specific to the ID platforms chosen by the user.
+inputs:
+  platforms:
+    description: 'User should input a single ID of platform Ex: "dev, perf, staging ..."'
+    required: true
+    default: ''
+  docker_simulator_image:
+    description: 'User should input a Docker image of the simulator Ex:"simulator_simulator, asset_simulators ...'
+    required: true
+    default: ''
+  docker_simulator_version:
+    description: 'User should input the version of the simulator Ex:"ASSET_v14.2.1"'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Push simulator image to Azure Container Registry
+      run: |
+          IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+          for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            babylon azure acr push --image ${{ inputs.docker_simulator_image }}:${{ inputs.docker_simulator_version }} -p $cleaned_platform
+          done
+      shell: bash

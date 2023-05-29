@@ -1,0 +1,20 @@
+name: Install Babylon Action
+description: Install babylon in given folder
+inputs:
+  branch:
+    description: 'babylon branch'
+    required: true
+    default: 'main'
+runs:
+  using: "composite"
+  steps:
+    - name: setup python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
+    - name: install babylon packages
+      run: |
+        git clone -b ${{ inputs.branch }} https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
+        pip install . --quiet
+      shell: bash
+

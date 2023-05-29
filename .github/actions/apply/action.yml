@@ -1,0 +1,16 @@
+name: Deploy Solution 
+description: Deploy solution with babylon apply 
+inputs:
+  directory_project:
+    description: 'User should enter the name of the directory of the project they want to deploy. For example: project'
+    required: true
+    default: 'project'
+runs:
+  using: "composite"
+  steps:
+    - name: Babylon apply command
+      env:
+        directory: ${{ github.workspace }}/${{ inputs.directory_project }}
+      run: |
+        babylon apply $directory/
+      shell: bash

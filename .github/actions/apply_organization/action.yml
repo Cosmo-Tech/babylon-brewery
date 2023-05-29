@@ -1,0 +1,11 @@
+name: Organization Deploy Action
+description: Create organization object
+runs:
+  using: "composite"
+  steps:
+    - name: Create organization object
+      env:
+        path_organization: ${{ github.workspace }}/organizations/path_organization.yaml
+      run: |
+        babylon api organizations apply --payload-file $path_organization
+      shell: bash
