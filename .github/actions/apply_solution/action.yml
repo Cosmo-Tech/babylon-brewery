@@ -1,0 +1,11 @@
+name: Solution Action
+description: Solution deployment
+runs:
+  using: "composite"
+  steps:
+    - name: Solution deployment
+      env:
+        path_solution: ${{ github.workspace }}/solutions/path_solution.yaml
+      run: |
+         babylon api solutions apply --payload-file $path_solution
+      shell: bash

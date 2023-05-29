@@ -1,0 +1,11 @@
+name: Dataset Create Action
+description: Dataset deployment
+runs:
+  using: "composite"
+  steps:
+    - name: Dataset deployment
+      env:
+        path_dataset: ${{ github.workspace }}/datasets/path_dataset.yaml
+      run: |
+          babylon api datasets apply --payload-file $path_dataset
+      shell: bash

@@ -1,0 +1,21 @@
+name: Pull simulator image from Azure Container Registry
+description: Pull simulator image from Azure Container Registry specific to the platform chosen by the user.
+inputs:
+  platform:
+    description: 'User should input a single ID platform Ex: "dev"'
+    required: true
+  docker_simulator_image:
+    description: 'User should input a Docker image of the simulator Ex:"simulator_simulator, asset_simulators ..."'
+    required: true
+    default: ''
+  docker_simulator_version:
+    description: 'User should input the version of the simulator Ex:"ASSET_v14.2.1"'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Pull simulator image from Azure Container Registry 
+      run: |
+          babylon azure acr pull --image ${{ inputs.docker_simulator_image }}:${{ inputs.docker_simulator_version }}
+      shell: bash

@@ -1,0 +1,22 @@
+name: Babylon namesapce Action
+description: Initialize babylon configuration in given folder
+inputs:
+  CONTEXT_ID:
+    description: 'CONTEXT_ID is ID chosen by user without special characters'
+    required: true
+    default: ''
+  PLATFORM_ID:
+    description: 'PLATFORM_ID is ID of Cosmo-Tech chosen by user without special characters'
+    required: true
+    default: ''
+  STATE_ID:
+    description: 'STATE_ID is ID of Cosmo-Tech chosen by user without special characters'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: setup namesapce babylon
+      run: |
+          babylon namespace use -c ${{ inputs.CONTEXT_ID }} -p ${{ inputs.PLATFORM_ID }} -s ${{ inputs.STATE_ID }}
+      shell: bash

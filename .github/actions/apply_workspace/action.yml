@@ -1,0 +1,22 @@
+name: Workspace Action
+description: Workspace deployment
+inputs:
+  email:
+    description: 'Workspace email security'
+    required: true
+    default: ''
+  role:
+    description: 'Workspace role security'
+    required: true
+    default: 'Admin'
+runs:
+  using: "composite"
+  steps:
+    - name: Workspace deployment
+      env:
+        path_workspace: ${{ github.workspace }}/workspaces/path_workspace.yaml
+      run: |
+          babylon api workspaces apply --payload-file $path_workspace
+          babylon api workspaces security add --email ${{ inputs.email }} --role ${{ inputs.role }}
+          babylon api workspaces send-key 
+      shell: bash
