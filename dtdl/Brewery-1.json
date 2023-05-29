@@ -1,0 +1,1 @@
+{"@context":"dtmi:dtdl:context;2","@id":"dtmi:model:Brewery;1","@type":"Interface","contents":[{"@type":"Relationship","name":"contains","target":"dtmi:base:EntityInterface;1"}],"displayName":"Brewery"}

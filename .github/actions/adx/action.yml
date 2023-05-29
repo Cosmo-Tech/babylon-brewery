@@ -1,0 +1,17 @@
+name: ADX Action
+description: ADX datavbase deployment
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+runs:
+  using: "composite"
+  steps:
+    - name: Azure Data Explorer deployment
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure adx database create -s
+        babylon azure adx script run-folder ${{ github.action_path }}/../../adx/
+        babylon azure adx permission set -t App -r Admin
+      shell: bash

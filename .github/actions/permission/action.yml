@@ -1,0 +1,27 @@
+name: Permissions IAM Action
+description: Set Azure permission IAM
+inputs:
+  pi:
+    description: 'Principal Id'
+    required: true
+    default: ''
+  pt:
+    description: 'Principal Type'
+    required: true
+    default: 'App'
+  ri:
+    description: 'Role Id'
+    required: true
+    default: ''
+  rt:
+    description: 'Role Type'
+    required: true
+    default: 'App'
+runs:
+  using: "composite"
+  steps:
+    - name: Set Azure premission IAM 
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure permission set -rt ${{ inputs.rt }} -ri ${{ inputs.ri }} -pi ${{ inputs.pi }} -pt ${{ inputs.pt }}
+      shell: bash

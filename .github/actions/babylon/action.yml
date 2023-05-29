@@ -1,0 +1,34 @@
+name: Install Babylon Action
+description: Install babylon in given folder
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  branch:
+    description: 'babylon branch'
+    required: true
+    default: 'main'
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+    - name: install babylon packages
+      run: |
+        git clone -b ${{ inputs.branch }} https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
+        pip install -e . --quiet
+      shell: bash
+
+    - name: setup babylon
+      run: |
+        echo 'export BABYLON_WORKING_DIRECTORY=.' >> ~/.bashrc
+        echo 'export BABYLON_CONFIG_DIRECTORY=./config' >> ~/.bashrc
+        source ~/.bashrc
+        mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
+        babylon config init
+        babylon working-dir complete
+      shell: bash

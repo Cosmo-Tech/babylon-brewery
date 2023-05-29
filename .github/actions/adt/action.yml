@@ -1,0 +1,18 @@
+name: 'AST Action'
+description: 'ADT instance deployment'
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+runs:
+  using: "composite"
+  steps:
+    - name: creation adt instance with permissions
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure adt instance create -s
+        babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+        babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
+        babylon azure adt model upload ${{ github.action_path }}/../../dtdl/
+      shell: bash
