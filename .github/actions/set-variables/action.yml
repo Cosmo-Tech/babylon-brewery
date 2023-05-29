@@ -1,0 +1,92 @@
+name: Setup environment variables Action
+description: Setup environment variables
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  email:  
+    description: 'Email'
+    required: true
+    default: ''
+  user_principal_id:  
+    description: 'user_principal_id (Azure Directory)'
+    required: true
+    default: ''
+  workspace_key:  
+    description: 'workspace_key'
+    required: true
+    default: ''
+  team_id:  
+    description: 'azure team_id'
+    required: true
+    default: ''
+  simulator_image_docker:
+    description: 'simulator_image_docker'
+    required: true
+    default: ''
+  simulator_version:
+    description: 'simulator_version'
+    required: true
+    default: ''
+  uri_artifact_zip:
+    description: 'uri_artifact_zip'
+    required: true
+    default: ''
+  deployment_name:
+    description: 'deployment_name'
+    required: true
+    default: ''
+  location:
+    description: 'location'
+    required: true
+    default: ''
+  repo_to:
+    description: 'repo_to : The repository in which we will perform the deployment'
+    required: true
+    default: ''
+  branch_to:
+    description: 'branch_to : The branch in which we will perform the deployment '
+    required: true
+    default: ''
+  organization:
+    description: 'Github Organisation Cosmo-Tech'
+    required: true
+    default: ''
+  api_url:
+    description: 'API url'
+    required: true
+    default: ''
+  item:
+    description: 'item'
+    required: true
+    default: ''
+  api:
+    description: 'control set api version'
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup environment variables
+      run: |
+        cd ${{ inputs.folder }}
+        babylon config set azure email "${{ inputs.email }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set azure user_principal_id "${{ inputs.user_principal_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set api workspace_key "${{ inputs.workspace_key }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set powerbi dashboard_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set powerbi scenario_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set azure team_id "${{ inputs.team_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set acr simulator_repository "${{ inputs.simulator_image_docker }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set acr simulator_version "${{ inputs.simulator_version }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set azure function_artifact_url "${{ inputs.uri_artifact_zip }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set webapp deployment_name "${{ inputs.deployment_name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set webapp location "${{ inputs.location }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set github branch "${{ inputs.branch_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set github organization "${{ inputs.organization }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --item ${{ inputs.item }}
+        if [ "${{ inputs.api }}" == "true" ]; then
+          babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
+        fi
+      shell: bash
+

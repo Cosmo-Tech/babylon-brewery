@@ -1,0 +1,31 @@
+name: Workspace Action
+description: Workspace deployment
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  name:
+    description: 'Workspace name object'
+    required: true
+    default: ''
+  email:
+    description: 'Workspace email security'
+    required: true
+    default: ''
+  role:
+    description: 'Workspace role security'
+    required: true
+    default: 'Admin'
+runs:
+  using: "composite"
+  steps:
+    - name: Workspace deployment
+      if: ${{ inputs.name != '' && inputs.email != '' }}
+      run: |
+        cd ${{ inputs.folder }}
+        babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+        babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+      shell: bash

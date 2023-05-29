@@ -1,0 +1,21 @@
+name: azure function Key Action
+description: Retrieve azure function key
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  resource_group:
+    description: 'resource_group'
+    required: true
+    default: 'phoenixdev'
+runs:
+  using: "composite"
+  steps:
+    - name: Retrieve azure function key
+      run: |
+        cd ${{ inputs.folder }}
+        database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} adx database_name) 
+        azf_key=$(az functionapp keys list -g ${{ inputs.resource_group }} -n $database_name --query masterKey)
+        babylon hvac set project func $azf_key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+      shell: bash

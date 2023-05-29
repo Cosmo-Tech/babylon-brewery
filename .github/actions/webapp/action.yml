@@ -1,0 +1,17 @@
+name: WebApp Deploy Action
+description: WebApp Deploy with powerbi and azure function option
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+runs:
+  using: "composite"
+  steps:
+    - name: webapp deployment with powerbi and azure function
+      run: |
+        cd ${{ inputs.folder }}
+        babylon webapp deploy -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} 
+        babylon powerbi workspace user add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} %app%principal_id App Admin
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %app%principal_id 
+      shell: bash

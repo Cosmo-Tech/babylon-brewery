@@ -1,0 +1,33 @@
+name: Pull Image from Azure Container Registry
+
+description: Pulles image from Azure Container Registry
+
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  simulator_image_docker:
+    description: 'simulator_image_docker'
+    required: true
+    default: ''
+  simulator_version:
+    description: 'simulator_version'
+    required: true
+    default: ''
+  platform:
+    description: 'platform to pull from'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Pull ACR simulator image
+      run: |
+        cd ${{ inputs.folder }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platform }}"
+        for platform in "${platforms_array[@]}"; do
+          if [ "$platform" == "dev" ]; then 
+            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
+          fi
+        done
+      shell: bash

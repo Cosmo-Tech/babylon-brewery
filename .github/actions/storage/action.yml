@@ -1,0 +1,16 @@
+name: Storage Container Deploy Action
+description: Create storage container by default
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+runs:
+  using: "composite"
+  steps:
+    - name: Create storage container by default
+      run: |
+        cd ${{ inputs.folder }}
+        organization_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api organization_id)
+        babylon azure storage container create $organization_id -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+      shell: bash

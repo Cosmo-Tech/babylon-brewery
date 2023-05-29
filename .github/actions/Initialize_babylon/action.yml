@@ -1,0 +1,21 @@
+name: Initialize Babylon  Action
+description: Initialize babylon configuration in given folder
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  platforms:
+    description: 'List of platforms to initialize'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: setup babylon
+      run: |
+        mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+          babylon config init -c ${{ env.CONTEXT_ID }} -p $platform
+        done
+      shell: bash

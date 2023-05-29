@@ -1,0 +1,30 @@
+name: Organization Deploy Action
+description: Create organization object
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  name:
+    description: 'Organization name object'
+    required: true
+    default: ''
+  email:
+    description: 'Organization email security'
+    required: true
+    default: ''
+  role:
+    description: 'Organization role security'
+    required: true
+    default: 'admin'
+runs:
+  using: "composite"
+  steps:
+    - name: Create organization object
+      if: ${{ inputs.name != '' && inputs.email != '' }}
+      run: |
+        cd ${{ inputs.folder }}
+        babylon api organizations payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api organizations create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api organizations security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+      shell: bash

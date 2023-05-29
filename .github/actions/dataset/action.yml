@@ -1,0 +1,29 @@
+name: Dataset Create Action
+description: Dataset deployment
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  type:
+    description: 'Dataset Type'
+    required: true
+    default: ''
+  name:
+    description: 'Dataset Name'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Dataset deployment
+      env:
+        name: ${{ inputs.name }}
+        type: ${{ inputs.type }}
+      run: |
+        cd ${{ inputs.folder }}
+        babylon api datasets create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --output .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml 
+        dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api dataset.storage_id)
+        sed -i "s/%DATASET%/$dataset_id/g" .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml
+        babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml --type $type $dataset_id
+      shell: bash
