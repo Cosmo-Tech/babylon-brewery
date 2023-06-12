@@ -9,9 +9,11 @@ runs:
   using: "composite"
   steps:
     - name: Azure Data Explorer deployment
+      env:
+        ADX: ${{ github.action_path }}/../../../adx
       run: |
         cd ${{ inputs.folder }}
         babylon azure adx database create -s
-        babylon azure adx script run-folder ${{ github.action_path }}/../../adx/
+        babylon azure adx script run-folder $ADX
         babylon azure adx permission set -t App -r Admin
       shell: bash

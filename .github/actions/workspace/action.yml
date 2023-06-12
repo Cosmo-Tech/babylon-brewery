@@ -19,9 +19,9 @@ runs:
   steps:
     - name: Workspace deployment
       env:
-        API: ${{ github.action_path }}/../../.payload_templates/api
+        API: ${{ github.action_path }}/../../../.payload_templates/api
         email: ${{ inputs.email }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api workspace create ${{ inputs.name }} -i $API/workspace.yaml -e $email -r admin -s
+        babylon api workspace create "${{ inputs.name }}" -i $API/workspace.yaml -e $email -r admin -s
       shell: bash

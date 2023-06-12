@@ -1,6 +1,10 @@
 name: Permissions IAM Action
 description: Set Azure permission IAM
 inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
   pi:
     description: 'Principal Id'
     required: true
@@ -8,7 +12,7 @@ inputs:
   pt:
     description: 'Principal Type'
     required: true
-    default: 'App'
+    default: 'ServicePrincipal'
   ri:
     description: 'Role Id'
     required: true
@@ -16,12 +20,12 @@ inputs:
   rt:
     description: 'Role Type'
     required: true
-    default: 'App'
+    default: 'ServicePrincipal'
 runs:
   using: "composite"
   steps:
     - name: Set Azure premission IAM 
       run: |
         cd ${{ inputs.folder }}
-        babylon azure permission set -rt ${{ inputs.rt }} -ri ${{ inputs.ri }} -pi ${{ inputs.pi }} -pt ${{ inputs.pt }}
+        babylon azure permission set -rt "${{ inputs.rt }}" -ri "${{ inputs.ri }}" -pi "${{ inputs.pi }}" -pt "${{ inputs.pt }}"
       shell: bash

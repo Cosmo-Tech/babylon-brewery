@@ -1,1 +1,0 @@
-{"@context":"dtmi:dtdl:context;2","@id":"dtmi:entity:JreyTest;1","@type":"Interface","contents":[{"@type":"Property","name":"id","schema":"integer"}],"displayName":"JREY_TEST","extends":["dtmi:base:CompoundEntity;1"]}

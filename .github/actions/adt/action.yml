@@ -12,7 +12,24 @@ runs:
       run: |
         cd ${{ inputs.folder }}
         babylon azure adt instance create -s
-        babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+      shell: bash
+
+    - name: add permissions
+      run: |
+        cd ${{ inputs.folder }}
         babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
-        babylon azure adt model upload ${{ github.action_path }}/../../dtdl/
+      shell: bash
+
+    - name: add permissions
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+      shell: bash
+
+    - name: run script
+      env:
+        DTDL: ${{ github.action_path }}/../../../dtdl
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure adt model upload $DTDL
       shell: bash

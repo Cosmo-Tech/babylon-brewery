@@ -1,8 +1,11 @@
-# Github Babylon Action Cosmo Tech Solution - DEV
+# Github Babylon Action Cosmo Tech Solution - DEV 
+(dev ref: babylon branch: ndon/deploy_test)
+
+</br>
 
 This repository contains the instructions on how to deploy a brewery solution based on the Cosmo Tech Platform.
 
-## Pre-requisite
+## Prerequisite
 
 * ### Setup Github Repository
 ---
@@ -43,13 +46,13 @@ This repository contains the instructions on how to deploy a brewery solution ba
             - api_url
             - api_scope
             - csm_platform_app_id
-            - csm_principal_app_id
+            - csm_object_app_id
             - csm_platform_scope_id
             - csm_acr_registry_name
             - acr_registry_name
             - azure_subscription
             - azure_tenant_id
-            - azure_client_id
+            - babylon_client_id
             - babylon_principal_id
             - adx_cluster_name
             - adx_cluster_object_id
@@ -72,8 +75,8 @@ This repository contains the instructions on how to deploy a brewery solution ba
 ---
 
 ```yaml
-name: Brewery Solution 
-
+name: Brewery Solution Test
+  
 env:
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -83,24 +86,20 @@ on:
   push:
     branches: 
       - "babylon"
-      
+
 jobs:
   babylon-deploy:
     runs-on: ubuntu-latest
     env:
-      email: nibaldo.donoso@cosmotech.com  
-      username: nibaldo  
       dir: personal
       config_path: ./config
-      repo_from: Cosmo-Tech/azure-sample-webapp
-      repo_tag: v5.0.0
-      repo_to: Cosmo-Tech/nibaldo_test
-      repo_to_branch: deploy/testmarket
     steps:
       - uses: actions/checkout@v3
 
       - name: install babylon
-        uses: babylon-actions/.github/actions/babylon@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/babylon@main
+        with: 
+          branch: ndon/deploy_test
     
       - id: deploy
         name: retrieve deploy keys from local folder
@@ -114,57 +113,44 @@ jobs:
           cmd: yq -o=json $config_path/platform.yaml
     
       - name: setup babylon config
-        uses: babylon-actions/.github/actions/config@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/config@main
         with:
           deploy: ${{ steps.deploy.outputs.result }}
           platform: ${{ steps.platform.outputs.result }}
 
-
+      - name: create a new organization
+        uses: Cosmo-Tech/babylon-actions/.github/actions/organization@main
+        with:
+          name: "Cosmo Tech Example"
+          email: example@cosmotech.com
+          role: admin
+        
       - name: deploy adx database and permissions
-        uses: babylon-actions/.github/actions/adx@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/adx@main
 
       - name: deploy adt instance and permissions
-        uses: babylon-actions/.github/actions/adt@main
-
-      - name: Retrieve babylon variables
-        id: baby_adx_cluster_id
-        run: |
-          cd $dir
-          adx_cluster_pi=$(babylon config get-variable platform "adx_cluster_object_id")
-          echo "adx_cluster_pi=$adx_cluster_pi" >> GITHUB_OUTPUT
+        continue-on-error: true
+        uses: Cosmo-Tech/babylon-actions/.github/actions/adt@main
 
       - name: deploy eventhub namespaces and permissions
-        uses: babylon-actions/.github/actions/eventhub@main
-        with:
-          adx_cluster_object_id: ${{ steps.baby_adx_cluster_id.outputs.adx_cluster_pi  }}
-
+        uses: Cosmo-Tech/babylon-actions/.github/actions/eventhub@main
 
       - name: set pat in babylon for deploy
-        uses: babylon-actions/.github/actions/pat@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/pat@main
         with:
           pat: ${{ secrets.PAT }}
       
       - name: retrieve sample webapp
-        uses: babylon-actions/.github/actions/retrieve@main
+        continue-on-error: true
+        uses: Cosmo-Tech/babylon-actions/.github/actions/retrieve@main
         with:
-          repo_from: $repo_from
-          repo_tag: $repo_tag
-          repo_to: $repo_to
-          repo_to_branch: $repo_to_branch
-          username: $username
-          email: $email
+          repo_from: Cosmo-Tech/azure-sample-webapp
+          repo_tag: v5.1.0-brewery
+          repo_to: <OWNER>/<REPO_NAME>
+          repo_to_branch: <BRANCH_DEST>
+          username: <USERNAME>
+          email: example@cosmotech.com
           pat: ${{ secrets.PAT }}
-
-      - name: deploy webapp
-        uses: babylon-actions/.github/actions/webapp@main
-        with:
-          powerbi: true
-          azf: true
-
-      - name: az login
-        uses: azure/login@v1
-        with:
-          cred: ${{ secrets.AZ_CREDENTIALS }}
 
       - name: Retrieve babylon variables
         id: baby_vars
@@ -176,6 +162,7 @@ jobs:
           echo "rg=$rg" >> $GITHUB_OUTPUT
           echo "org=$org" >> $GITHUB_OUTPUT
           echo "wk=$wk" >> $GITHUB_OUTPUT
+          echo "adxdatabasename=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
           echo "azfname=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
           echo "namespace=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
           echo "adt=$(babylon config get-variable deploy 'digital_twin_url')" >> $GITHUB_OUTPUT
@@ -186,44 +173,68 @@ jobs:
           echo "dadt=$(babylon config get-variable deploy 'adt_dataset_id')" >> $GITHUB_OUTPUT
           echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
 
-      - name: get azf key
-        id: azf
-        uses: sergeysova/jq-action@v2
+      - name: deploy workspace powerbi
+        uses: Cosmo-Tech/babylon-actions/.github/actions/powerbi@main
         with:
-          cmd: az functionapp keys list -g $rg -n ${{ steps.baby_vars.outputs.azfname }} --query masterKey | jq -r ''
+          workspace_name: "Example Workspace Test"
+          database_name: ${{ steps.baby_vars.outputs.adxdatabasename }}
+          cluster_url: <ADX_CLUSTER_NAME>
+          
+      - name: deploy webapp
+        continue-on-error: true
+        uses: Cosmo-Tech/babylon-actions/.github/actions/webapp@main
+        with:
+          powerbi: true
+          azf: true
+
+      - name: az login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZ_CREDENTIALS }}
+
+      - name: retrieve azf key
+        id: azf
+        env:
+          rg: ${{ steps.baby_vars.outputs.rg }}
+          azfname: ${{ steps.baby_vars.outputs.azfname }}        
+        run: |
+          azf_key=$(az functionapp keys list -g $rg -n $azfname --query masterKey)
+          echo "azf_key=$azf_key" >> $GITHUB_OUTPUT
+
       - name: set azf key
         run: |
           cd $dir
-          babylon cofig set-variable secrets azf.key ${{ steps.azf.outputs.result }}
+          babylon config set-variable secrets azf.key ${{ steps.azf.outputs.azf_key }}
 
-      - name: get event hub key
+      - name: retrieve hub keys
         id: hub
-        uses: sergeysova/jq-action@v2
         env:
           rg: ${{ steps.baby_vars.outputs.rg }}
           namespace: ${{ steps.baby_vars.outputs.namespace }}
           keyname: RootManageSharedAccessKey
-        with:
-          cmd: az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name $keyname --query primaryKey | jq -r ''
+        run: |
+          hub_key=$(az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name $keyname --query primaryKey)
+          echo "hub_key=$hub_key" >> $GITHUB_OUTPUT 
+
       - name: set event hub key
         run: |
           cd $dir
-          babylon config set-variable secrets eventhub.key ${{ steps.hub.outputs.result }}
+          babylon config set-variable secrets eventhub.key ${{ steps.hub.outputs.hub_key }}
 
       - name: create adt connector
-        uses: babylon-actions/.github/actions/connector@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
         with:
           type: adt
           name: "Brewery Baby Connector ADT test"
 
       - name: create connector storage
-        uses: babylon-actions/.github/actions/connector@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
         with:
           type: storage
           name: "Brewery Baby connector STORAGE"
 
       - name: create dataset adt
-        uses: babylon-actions/.github/actions/dataset@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@main
         with:
           type: adt
           name: "Brewery Baby dataset ADT"
@@ -235,21 +246,28 @@ jobs:
           echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
 
       - name: add adt permission to webapp
-        uses: babylon-actions/.github/actions/permission@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/permission@main
         with:
           pi: ${{ steps.baby_wpi.outputs.wpi }}
-          pt: App
+          pt: ServicePrincipal
           ri: Microsoft.DigitalTwins/digitalTwinsInstances
-          rt: App
+          rt: ServicePrincipal
 
       - name: create solution brewery
-        uses: babylon-actions/.github/actions/solution@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/solution@main
+        with:
+          name: Brewery Baby Solution 
 
       - name: create workspace brewery
-        uses: babylon-actions/.github/actions/workspace@main
+        uses: Cosmo-Tech/babylon-actions/.github/actions/workspace@main
         with:
           name: Brewery Baby Workspace
-          email: $email
+          email: example@cosmotech.com
+
+      - name: set key api
+        run: |
+          cd $dir
+          babylon api workspace setkey
 
 ```
 
@@ -294,18 +312,18 @@ Solution deployment
 >configuration
 
     platform file:
-        csm_acr_registry_name: source
-        acr_registry_name: destination
+        csm_acr_registry_name: <SOURCE>
+        acr_registry_name: <DESTINATION>
     deploy file:
-        csm_simulator_repository: source
-        simulator_repository: destination
+        csm_simulator_repository: <SOURCE>
+        simulator_repository: <DESTINATION>
         simulator_version: <x.y.z>
 
 >run
 
 ```bash
-babylon azure acr pull -r <source>.azurecr.io
-babylon azure acr push -r <dest>.azurecr.io
+babylon azure acr pull -r <SOURCE>.azurecr.io
+babylon azure acr push -r <DESTINATION>.azurecr.io
 ```
 
 </br>
@@ -316,16 +334,16 @@ babylon azure acr push -r <dest>.azurecr.io
 >configuration
 
     deploy file:
-        organization_id: O-gZYpnd27G7
-        api_url: https://dev.api.cosmotech.com/v2
-        simulator_repository: brewery_simulator
-        simulator_version: 0.0.26
+        organization_id: <ORGANIZATION_ID>
+        api_url: <API_URL>
+        simulator_repository: <SIMULATOR>
+        simulator_version: <VERSION>
 
     platform file:
-        api_url: "https://dev.api.cosmotech.com/v2"
-        api_scope: "http://dev.api.cosmotech.com/.default"
-        azure_subscription: <Subscription Id>
-        azure_tenant_id: <Tenant Id>
+        api_url: <API_URL>
+        api_scope: <API_SCOPE>
+        azure_subscription: <SUBSCRIPTION_ID>
+        azure_tenant_id: <TENANT_ID>
 
     API: .payload_templates/api
 
@@ -360,21 +378,33 @@ babylon api workspace create 'The Baby Solution Dev Workspace' -i API/workspace.
 ## Azure digital twins 
 ---
 
->configuration (example)
+>configuration
 
     deploy_file:
         organization_id: <ORGANIZATION_ID>
         workspace_key: <WORKSPACE_KEY>
 
     platform file:
-        resource_group_name: phoenixdev
-        resources_location: westus2
+        resource_group_name: <RESOURCE_GROUP_NAME>
+        resources_location: <RESOURCES_LOCATION>
 
 >run
 
 ```bash
 babylon azure adt instance create -s
+
+<!-- permissions adt-->
+<!-- Azure Digital Twins Data Owner: bcd981a7-7f74-457b-83e1-cceb9e632ffe -->
+<!-- Azure Digital Twins Data Reader: d57506d4-4c8d-48b1-8587-93c323f6a5a3 -->
+<!-- ObjectId / PrincipalId Platform: 87267e78-0cff-4bd7-a4c5-8a68727f8cb7 -->
+<!-- if -pi -> default csm_object_platform_id -->
+babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
+
 babylon azure adt model upload dtdl/
+
+<!-- Principal Id WebApp -->
+babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe --select-webapp
 ```
 
 </br>
@@ -431,14 +461,14 @@ babylon api dataset create 'ADT Dataset Babylon' -i API/dataset.adt.yaml -t adt 
 ## Azure data explorer cluster
 ---
 
->configuration (example)
+>configuration
 
     deploy_file:
         organization_id: <ORGANIZATION_ID>
         workspace_key: <WORKSPACE_KEY>
 
     platform file:
-        adx_cluster_name: phoenixdev
+        adx_cluster_name: <ADX_CLUSTER_NAME>
         adx_cluster_object_id: <PRINCIPAL_ID>
 
 >run
@@ -446,10 +476,43 @@ babylon api dataset create 'ADT Dataset Babylon' -i API/dataset.adt.yaml -t adt 
 ```bash
 babylon azure adx database create -s
 babylon azure adx script run-folder adx
+<!-- permission cosmo platform ADX database : default csm_object_platform_id-->
+babylon azure adx permission set -t App -r Admin
+
+<!-- set key eventhub on workspace -->
+rg=$(babylon config get-variable deploy "resource_group_name")
+org=$(babylon config get-variable deploy "organization_id")
+wk=$(babylon config get-variable deploy "workspace_key")
+namespace=$(echo $org-$wk | tr [:upper:] [:lower:])
+babylon config set-variable secrets eventhub.key $(az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name <ROOT_KEY> --query primaryKey | jq -r '')
+babylon api workspace setkey
 ```
 
 </br>
 
+## Azure Event Hub namespaces
+---
+
+>configuration
+
+    API: .payload_templates/arm
+
+>run
+
+```bash
+babylon azure arm runtmp -f API/eventhub_deploy.json
+<!-- Event Hub Namespaces permissions-->
+<!-- Azure Event Hubs Data Receiver: a638d3c7-ab3a-418d-83e6-5f17a39d4fde -->
+<!-- Azure Event Hubs Data Sender  : 2b629674-e913-4c01-ae53-ef4638d8f975 -->
+<!-- Principal Id ADX Cluster -->
+babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi <ADX_CLUSTER_PRINCIPAL_ID> -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
+babylon azure permission set -rt Microsoft.EventHub/Namespaces -ri 2b629674-e913-4c01-ae53-ef4638d8f975
+
+babylon azure adx connections create "ProbesMeasures" JSON -tn "ProbesMeasures" 
+babylon azure adx connections create "ScenarioMetaData" CSV -tn "ScenarioMetadata" 
+babylon azure adx connections create "ScenarioRun" JSON -tn "SimulationTotalFacts" 
+babylon azure adx connections create "ScenarioRunMetaData" CSV -tn "ScenarioRunMetadata"
+```
 
 ## Power bi
 ---
@@ -459,6 +522,11 @@ babylon azure adx script run-folder adx
     platform file:
         azure_powerbi_group_id: <AZURE_GROUP_ID>
 
+>run
+
+```bash
+babylon powerbi deploy-workspace <WORKSPACE_NAME> -f <POWERBI_REPORT_PATH> -p ADX_DATABASE <DATABASE_NAME> -p ADX_CLUSTER <CLUSTER_NAME>
+```
 
 </br>
 
@@ -470,41 +538,88 @@ Link: https://cosmo-tech.github.io/Babylon-End-User-Doc/2.0.0/commands/webapp_de
 >configuration
 
     deploy file:
-        deployment_name: babybrewery
-        webapp_location: westus2
+        deployment_name: <DEPLOYMENT_NAME>
+        webapp_location: <RESOURCE_LOCATION>
         webapp_repository: <GITHUB_REPOSITORY_URL>
-        webapp_repository_branch: main
+        webapp_repository_branch: <BRANCH>
 
     platform file:
         azure_powerbi_group_id: <AZURE_GROUP_ID>
 
 
->manual operation
+> manual operation
 
     - create PAT with repo and workflow scopes
-    - create a new repository (empty)
-
     help : https://cosmo-tech.github.io/Babylon-End-User-Doc/2.1.0/commands/webapp_deploy/
-
+   
+```bash
+<!-- on webapp_repository_branch -->
+git config --global pull.rebase true
+git config --global init.defaultBranch main
+git config --global user.name <USERNAME>
+git config --global user.email <EMAIL>
+cd <BABYLON_WORKING_DIR> ; mkdir webapp; cd webapp
+git init
+echo "# empty_webapp" >> README.md
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://Cosmo-Tech:<PAT>@github.com/<REPO_SOURCE>.git
+git remote add upstream https://oauth2:<PAT>@github.com/<REPO_DESTINATION>.git
+git remote set-url upstream --push "NO"
+git fetch --all
+git checkout -B <BRANCH_REPO_DESTINATION> <TAG_REPO_SOURCE>
+rm -r .github/
+git add .; git commit -m 'first commit'
+git push origin <BRANCH_REPO_DESTINATION> -f
+```
+   
 >run
 
 ```bash
 babylon config set-variable secrets github.token <GITHUB_TOKEN>
-
-git clone git@github.com:<GITHUB_REPOSITORY_URL> webapp_src; cd webapp_src
-git remote add upstream git@github.com:Cosmo-Tech/azure-sample-webapp.git
-git remote set-url upstream --push "NO"
-git fetch upstream
-git checkout -b main upstream v<x.y.z>-brewery
-sudo rm -r .github/
-git add .; git commit -m 'first commit'; git push origin main -f; cd ..
-babylon webapp deploy
+babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTION_DEPLOY_PATH>
 ```
 
 </br>
 
 ```bash
 .
+├── .github
+│   └── actions
+│       ├── adt
+│       │   └── action.yml
+│       ├── adx
+│       │   └── action.yml
+│       ├── babylon
+│       │   └── action.yml
+│       ├── config
+│       │   ├── action.yml
+│       │   └── set_babylon_config.py
+│       ├── connector
+│       │   └── action.yml
+│       ├── dataset
+│       │   └── action.yml
+│       ├── eventhub
+│       │   └── action.yml
+│       ├── organization
+│       │   └── action.yml
+│       ├── pat
+│       │   └── action.yml
+│       ├── permission
+│       │   └── action.yml
+│       ├── powerbi
+│       │   └── action.yml
+│       ├── retrieve
+│       │   └── action.yml
+│       ├── solution
+│       │   └── action.yml
+│       ├── storage
+│       │   └── action.yml
+│       ├── webapp
+│       │   └── action.yml
+│       └── workspace
+│           └── action.yml
 ├── .payload_templates
 │   ├── api
 │   │   ├── connector.adt.yaml
@@ -528,7 +643,7 @@ babylon webapp deploy
 │       ├── webapp_details.json
 │       └── webapp_settings.json
 ├── powerbi
-│   └── Brewery_report.pbix
+│   └── brewery_report.pbix
 ├── README.md
 └── terraform_cloud
     ├── tfc_variables_create.yaml

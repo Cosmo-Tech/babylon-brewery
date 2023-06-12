@@ -4,37 +4,486 @@ description: ""
 repository: "${deploy['simulator_repository']}"
 version: "${deploy['simulator_version']}"
 tags:
+  - '1day'
+  - 'Brewery'
 parameters:
-- id: parameter1
-  labels:
-    fr: Paramètre 1
-    en: Parameter 1
-  varType: string
+  - id: 'stock'
+    labels:
+      fr: 'Stock'
+      en: 'Stock'
+    varType: 'int'
+    defaultValue: 100
+  - id: 'restock_qty'
+    labels:
+      fr: 'Restock'
+      en: 'Restock'
+    varType: 'int'
+    defaultValue: 25
+  - id: 'nb_waiters'
+    labels:
+      fr: 'Serveurs'
+      en: 'Waiters'
+    varType: 'int'
+    defaultValue: 5
+  - id: 'currency'
+    labels:
+      fr: 'Symbole de la monnaie'
+      en: 'Currency symbol'
+    varType: 'enum'
+    defaultValue: 'USD'
+    options:
+      enumValues:
+        - key: 'USD'
+          value: '$'
+        - key: 'EUR'
+          value: '€'
+        - key: 'BTC'
+          value: '฿'
+        - key: 'JPY'
+          value: '¥'
+      tooltipText:
+        fr: "Choisissez un symbole :\n\t- $\n\t- €\n\t- ฿\n\t- ¥"
+        en: "Choose a symbol:\n\t- $\n\t- €\n\t- ฿\n\t- ¥"
+  - id: 'currency_name'
+    labels:
+      fr: 'Nom de la monnaie'
+      en: 'Currency name'
+    varType: 'string'
+    defaultValue: 'EUR'
+    options:
+      tooltipText:
+        fr: 'Choisissez un nom de monnaie'
+        en: 'Choose a currency name'
+  - id: 'currency_value'
+    labels:
+      fr: 'Valeur'
+      en: 'Value'
+    varType: 'number'
+    defaultValue: 1000
+    options:
+      tooltipText:
+        fr: 'Choisissez une valeur'
+        en: 'Set value'
+  - id: 'currency_used'
+    labels:
+      fr: 'Activer la monnaie'
+      en: 'Enable currency'
+    varType: 'bool'
+    defaultValue: false
+    options:
+      tooltipText:
+        fr: 'Activez la monnaie'
+        en: 'Enable the currency'
+  - id: 'start_date'
+    labels:
+      fr: 'Date de départ'
+      en: 'Start date'
+    varType: 'date'
+    defaultValue: '2014-08-18T19:11:54.000Z'
+    options:
+      tooltipText:
+        fr: 'Choisissez une date de début'
+        en: 'Choose a start date'
+  - id: 'average_consumption'
+    labels:
+      fr: 'Consommation moyenne'
+      en: 'Average consumption'
+    varType: 'number'
+    minValue: 0
+    maxValue: 10
+    defaultValue: 3
+    options:
+      subType: 'SLIDER'
+      tooltipText:
+        fr: 'En pintes'
+        en: 'In pints'
+  - id: 'additional_seats'
+    labels:
+      fr: 'Sièges additionnels'
+      en: 'Additional seats'
+    varType: 'number'
+    defaultValue: -4
+    minValue: -600
+    maxValue: 2500
+    options:
+      tooltipText:
+        fr: 'La valeur peut être comprise entre -600 et 2500'
+        en: 'Value can be between -600 and 2500'
+  - id: 'additional_tables'
+    labels:
+      fr: 'Tables additionnelles'
+      en: 'Additional tables'
+    varType: 'number'
+    defaultValue: 3
+    minValue: -150
+    maxValue: 12000
+    options:
+      tooltipText:
+        fr: 'La valeur peut être comprise entre -150 et 12000'
+        en: 'Value can be between -150 and 12000'
+  - id: 'activated'
+    labels:
+      en: 'Activated'
+      fr: 'Activé'
+    varType: 'bool'
+    defaultValue: false
+  - id: 'evaluation'
+    labels:
+      fr: 'Evaluation'
+      en: 'Evaluation'
+    varType: 'string'
+    defaultValue: 'Good'
+  - id: 'volume_unit'
+    labels:
+      en: 'Volume unit'
+      fr: 'Unité de volume'
+    varType: 'enum'
+    defaultValue: 'LITRE'
+    options:
+      enumValues:
+        - key: 'LITRE'
+          value: 'L'
+        - key: 'BARREL'
+          value: 'bl'
+        - key: 'CUBIC_METRE'
+          value: 'm³'
+      subType: 'RADIO'
+  - id: 'comment'
+    labels:
+      en: 'Comment'
+      fr: 'Commentaire'
+    varType: 'string'
+    defaultValue: 'None'
+  - id: 'additional_date'
+    labels:
+      en: 'Additional date'
+      fr: 'Date additionelle'
+    varType: 'date'
+    defaultValue: '2022-06-22T00:00:00.000Z'
+    minValue: '2021-01-01T00:00:00.000Z'
+    maxValue: '2022-12-31T00:00:00.000Z'
+  - id: 'initial_stock_dataset'
+    labels:
+      fr: 'Stock de départ'
+      en: 'Initial stock'
+    varType: '%DATASETID%'
+    options:
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: 'Initial stock dataset part'
+      defaultFileTypeFilter: '.zip,.csv,.json,.xls,.xlsx'
+  - id: 'example_dataset_part_1'
+    labels:
+      fr: 'Exemple de sous-partie de dataset 1'
+      en: 'Example dataset part 1'
+    varType: '%DATASETID%'
+    options:
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: '1st example of dataset part'
+      defaultFileTypeFilter: '.zip,.csv,.json,.xls,.xlsx'
+      tooltipText:
+        fr: 'Choisissez un dataset'
+        en: 'Set a dataset'
+  - id: 'example_dataset_part_2'
+    labels:
+      fr: 'Exemple de sous-partie de dataset 2'
+      en: 'Example dataset part 2'
+    varType: '%DATASETID%'
+    options:
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: '2nd example of dataset part'
+      defaultFileTypeFilter: '.zip,.csv,.json,.xls,.xlsx'
+  - id: 'example_dataset_part_3'
+    labels:
+      fr: 'Exemple de sous-partie de dataset 3'
+      en: 'Example dataset part 3'
+    varType: '%DATASETID%'
+    options:
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: '3rd example of dataset part'
+      defaultFileTypeFilter: '.zip,.csv,.json,.xls,.xlsx'
+      tooltipText:
+        fr: 'Choisissez un dataset'
+        en: 'Set a dataset'
+  - id: 'customers'
+    labels:
+      fr: 'Clients'
+      en: 'Customers'
+    varType: '%DATASETID%'
+    options:
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: 'customers data'
+      subType: 'TABLE'
+      columns:
+        - field: 'name'
+          type:
+            - 'nonResizable'
+            - 'nonEditable'
+            - 'nonSortable'
+        - field: 'age'
+          type:
+            - 'int'
+          minValue: 0
+          maxValue: 120
+          acceptsEmptyFields: true
+        - field: 'canDrinkAlcohol'
+          type:
+            - 'bool'
+        - field: 'favoriteDrink'
+          type:
+            - 'enum'
+          enumValues:
+            - 'AppleJuice'
+            - 'Beer'
+            - 'OrangeJuice'
+            - 'Wine'
+        - field: 'birthday'
+          type:
+            - 'date'
+          minValue: '1900-01-01'
+          maxValue: '2022-12-19T13:46:15.223Z'
+          acceptsEmptyFields: true
+        - field: 'height'
+          type:
+            - 'number'
+          minValue: 0
+          maxValue: 2.5
+          acceptsEmptyFields: true
+      dateFormat: 'dd/MM/yyyy'
+      tooltipText:
+        fr: 'Importez ou exportez un fichier clients'
+        en: 'Import or export a customers file'
+  - id: 'events'
+    labels:
+      fr: 'Evénements'
+      en: 'Events'
+    varType: '%DATASETID%'
+    defaultValue: 'd-kpq7nw4m5rwng'
+    options:
+      tooltipText:
+        fr: "Importez ou exportez un fichier d'événements"
+        en: 'Import or export an events file'
+      connectorId: 'c-d7e5p9o0kjn9'
+      description: 'events data'
+      subType: 'TABLE'
+      columns:
+        - field: 'theme'
+          type:
+            - 'string'
+        - field: 'date'
+          type:
+            - 'date'
+          minValue: '1900-01-01'
+          maxValue: '2999-12-31'
+        - field: 'timeOfDay'
+          type:
+            - 'enum'
+          enumValues:
+            - 'morning'
+            - 'midday'
+            - 'afternoon'
+            - 'evening'
+        - field: 'eventType'
+          type:
+            - 'string'
+            - 'nonResizable'
+            - 'nonEditable'
+        - field: 'reservationsNumber'
+          type:
+            - 'int'
+          minValue: 0
+          maxValue: 300
+          acceptsEmptyFields: true
+        - field: 'online'
+          type:
+            - 'bool'
+            - 'nonSortable'
+      dateFormat: 'dd/MM/yyyy'
+  - id: 'training_start_date'
+    labels:
+      fr: 'Date de départ'
+      en: 'Start date'
+    varType: 'date'
+  - id: 'training_end_date'
+    labels:
+      fr: 'Date de Fin'
+      en: 'End date'
+    varType: 'date'
 parameterGroups:
-- id: parameter_group1
-  labels:
-    fr: Groupe de paramètres 1
-    en: Parameter group 1
-  parameters:
-  - parameter1
+  - id: 'bar_parameters'
+    labels:
+      fr: 'Bar'
+      en: 'Pub'
+    parameters:
+      - 'stock'
+      - 'restock_qty'
+      - 'nb_waiters'
+  - id: 'basic_types'
+    labels:
+      fr: 'Exemples de types standards'
+      en: 'Basic types examples'
+    parameters:
+      - 'currency'
+      - 'currency_name'
+      - 'currency_value'
+      - 'currency_used'
+      - 'start_date'
+      - 'average_consumption'
+    options:
+      authorizedRoles:
+        - 'Platform.Admin'
+        - 'Organization.User'
+      hideParameterGroupIfNoPermission: false
+  - id: 'training_dates'
+    labels:
+      fr: 'Dates de simulation'
+      en: 'Simulation dates'
+    parameters:
+      - 'training_start_date'
+      - 'training_end_date'
+  - id: 'file_upload'
+    labels:
+      en: 'Initial values'
+      fr: 'Valeurs initiales'
+    parameters:
+      - 'initial_stock_dataset'
+  - id: 'dataset_parts'
+    labels:
+      en: 'Dataset parts'
+      fr: 'Fragments de dataset'
+    parameters:
+      - 'example_dataset_part_1'
+      - 'example_dataset_part_2'
+  - id: 'extra_dataset_part'
+    labels:
+      en: 'Additional dataset part'
+      fr: 'Fragment additionel'
+    parameters:
+      - 'example_dataset_part_3'
+  - id: 'customers'
+    labels:
+      en: 'Customers'
+      fr: 'Clients'
+    parameters:
+      - 'customers'
+  - id: 'events'
+    labels:
+      en: 'Events'
+      fr: 'Évènements'
+    parameters:
+      - 'events'
+      - 'additional_seats'
+      - 'activated'
+      - 'evaluation'
+  - id: 'additional_parameters'
+    labels:
+      en: 'Additional parameters'
+      fr: 'Paramètres additionnels'
+    parameters:
+      - 'volume_unit'
+      - 'additional_tables'
+      - 'comment'
+      - 'additional_date'
+  - id: 'training_dates'
+    labels:
+      fr: 'Dates de simulation'
+      en: 'Simulation dates'
+    parameters:
+      - 'training_start_date'
+      - 'training_end_date'
 runTemplates:
-- id: run_template1
-  name: Run template 1
-  description: Run template 1
-  csmSimulation: simulation
-  tags:
-  - Simulation
-  computeSize: basic
-  noDataIngestionState: false
-  fetchDatasets: true
-  fetchScenarioParameters: true
-  applyParameters: true
-  sendDatasetsToDataWarehouse: true
-  sendInputParametersToDataWarehouse: false
-  validateData: false
-  preRun: false
-  run: true
-  postRun: false
-  parametersJson: true
-  parameterGroups:
-  - parameter_group1
+  - id: '1'
+    name: 'Run template with Brewery parameters'
+    description: 'Run template with Brewery parameters'
+    csmSimulation: 'BreweryDemoSimulationWithConnector'
+    fetchDatasets: true
+    fetchScenarioParameters: true
+    applyParameters: true
+    sendDatasetsToDataWarehouse: true
+    sendInputParametersToDataWarehouse: true
+    validateData: false
+    preRun: false
+    postRun: false
+    tags:
+      - '1'
+      - 'With params'
+    parameterGroups:
+      - 'bar_parameters'
+      - 'file_upload'
+  - id: '2'
+    name: 'Run template without parameters'
+    description: 'Run template without parameters'
+    csmSimulation: 'BreweryDemoSimulationWithConnector'
+    fetchDatasets: true
+    fetchScenarioParameters: false
+    applyParameters: false
+    sendDatasetsToDataWarehouse: true
+    sendInputParametersToDataWarehouse: false
+    validateData: false
+    preRun: false
+    postRun: false
+    tags:
+      - '2'
+      - 'No param'
+  - id: '3'
+    name: 'Run template with mock basic types parameters'
+    description: 'Run template with mock basic types parameters'
+    csmSimulation: 'BreweryDemoSimulationWithConnector'
+    fetchDatasets: true
+    fetchScenarioParameters: false
+    applyParameters: false
+    sendDatasetsToDataWarehouse: true
+    sendInputParametersToDataWarehouse: false
+    validateData: false
+    preRun: false
+    postRun: false
+    tags:
+      - '3'
+      - 'Example'
+    parameterGroups:
+      - 'basic_types'
+      - 'dataset_parts'
+      - 'extra_dataset_part'
+      - 'customers'
+      - 'events'
+      - 'additional_parameters'
+  - id: 'hidden test run template'
+    name: 'Hidden test run template without parameters'
+    description: 'Run template without parameters'
+    csmSimulation: 'BreweryDemoSimulationWithConnector'
+    fetchDatasets: true
+    fetchScenarioParameters: false
+    applyParameters: false
+    sendDatasetsToDataWarehouse: true
+    sendInputParametersToDataWarehouse: false
+    validateData: false
+    preRun: false
+    postRun: false
+    tags:
+      - '2'
+      - 'No param'
+  - id: 'high cpu (DO NOT USE)'
+    name: 'high cpu (DO NOT USE)'
+    description: 'high cpu (DO NOT USE)'
+    computeSize: 'highcpu'
+    runSizing:
+      requests:
+        cpu: '0.5'
+        memory: '128Mi'
+      limits:
+        cpu: '1'
+        memory: '256Mi'
+    csmSimulation: 'BreweryDemoSimulationWithConnector'
+    fetchDatasets: true
+    fetchScenarioParameters: true
+    applyParameters: true
+    sendDatasetsToDataWarehouse: true
+    sendInputParametersToDataWarehouse: true
+    validateData: false
+    preRun: false
+    postRun: false
+    tags:
+      - '1'
+      - 'With params'
+      - 'custom high cpu'
+    parameterGroups:
+      - 'bar_parameters'

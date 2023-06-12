@@ -20,7 +20,7 @@ webApp:
   url: "${deploy['webapp_static_domain']}"
   options:
     charts:
-      workspaceId: '290de699-9026-42c0-8c83-e4e87c3f22dd'
+      workspaceId: "${deploy['powerbi_workspace_id']}"
       logInWithUserCredentials: false
       scenarioViewIframeDisplayRatio: 4.514285714285714
       dashboardsViewIframeDisplayRatio: 1.610062893081761
@@ -28,7 +28,7 @@ webApp:
         - title:
             en: 'Digital Twin Structure'
             fr: 'Structure du jumeau numérique'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: false
             panes:
@@ -41,7 +41,7 @@ webApp:
         - title:
             en: 'Stocks Follow-up'
             fr: 'Suivi de stock'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: false
             panes:
@@ -73,7 +73,7 @@ webApp:
         - title:
             en: 'Customer Satisfaction'
             fr: 'Satisfaction client'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: true
             panes:
@@ -107,7 +107,7 @@ webApp:
           title:
             en: 'Scenario dashboard for run type 1'
             fr: 'Rapport du scenario du run type 1'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: false
             panes:
@@ -134,7 +134,7 @@ webApp:
           title:
             en: 'Scenario dashboard'
             fr: 'Rapport du scenario'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: false
             panes:
@@ -173,7 +173,7 @@ webApp:
           title:
             en: 'Scenario dashboard'
             fr: 'Rapport du scenario'
-          reportId: '608b7bef-f5e3-4aae-b8db-19bbb38325d5'
+          reportId: "${deploy['powerbi_report_id']}"
           settings:
             navContentPaneEnabled: false
             panes:
