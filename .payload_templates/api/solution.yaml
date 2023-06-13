@@ -9,7 +9,7 @@ parameters:
 parameterGroups:
 runTemplates:
 - id: common
-  name: Standard simulationtags:
+  name: Standard simulationtags
   - '1day'
   - 'Brewery'
 parameters:

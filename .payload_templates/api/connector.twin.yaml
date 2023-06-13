@@ -2,7 +2,6 @@ key: "${connector_key}"
 name: "${connector_name}"
 repository: cosmo-tech/twincache-connector
 version: 0.1.1
-ioTypes:
 description: Connector for CosmoTech TwinCache. Read TwinCache and write the data in CSV for the Simulation
 tags:
 - TwinCache
@@ -16,12 +15,9 @@ parameterGroups:
   - id: TWIN_CACHE_NAME
     label: TwinCache entity name
     valueType: string
-    options:
-    default:
     envVar: TWIN_CACHE_NAME
   - id: LOG_LEVEL
     label: Log level
     valueType: string
-    options:
     default: DEBUG
     envVar: LOG_LEVEL
