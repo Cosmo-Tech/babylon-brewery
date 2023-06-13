@@ -4,20 +4,18 @@ repository: cosmo-tech/twincache-connector
 version: 0.1.1
 description: Connector for CosmoTech TwinCache. Read TwinCache and write the data in CSV for the Simulation
 tags:
-- TwinCache
+  - TwinCache
 url: https://github.com/Cosmo-Tech/twincache-connector/pkgs/container/twincache-connector
-azureManagedIdentity:
-azureAuthenticationWithCustomerAppRegistration:
 parameterGroups:
-- id: parameters
-  label: Parameters
-  parameters:
-  - id: TWIN_CACHE_NAME
-    label: TwinCache entity name
-    valueType: string
-    envVar: TWIN_CACHE_NAME
-  - id: LOG_LEVEL
-    label: Log level
-    valueType: string
-    default: DEBUG
-    envVar: LOG_LEVEL
+  - id: parameters
+    label: Parameters
+    parameters:
+      - id: TWIN_CACHE_NAME
+        label: TwinCache entity name
+        valueType: string
+        envVar: TWIN_CACHE_NAME
+      - id: LOG_LEVEL
+        label: Log level
+        valueType: string
+        default: DEBUG
+        envVar: LOG_LEVEL

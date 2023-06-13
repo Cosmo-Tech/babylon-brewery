@@ -4,10 +4,10 @@ description: Asset
 solution:
   solutionId: "${solution_id}"
   runTemplateFilter:
-  - common
+    - 'common'
   defaultRunTemplateDataset: null
 tags:
-- Asset
+  - 'Asset'
 webApp:
   url: "${deploy['webapp_static_domain']}"
   options:
