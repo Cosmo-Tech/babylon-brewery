@@ -1,1 +1,0 @@
-{"@context":"dtmi:dtdl:context;2","@id":"dtmi:base:CompoundEntity;1","@type":"Interface","contents":[{"@type":"Relationship","name":"shared_environment","target":"dtmi:base:CompoundEntity;1"}],"displayName":"CompoundEntity","extends":["dtmi:base:EntityInterface;1"]}

@@ -1,1 +1,0 @@
-{"@context":"dtmi:dtdl:context;2","@id":"dtmi:entity:All;1","@type":"Interface","displayName":"All","extends":["dtmi:entity:LogicGate;1"]}
