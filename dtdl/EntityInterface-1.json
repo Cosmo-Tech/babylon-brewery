@@ -1,0 +1,1 @@
+{"@context":"dtmi:dtdl:context;2","@id":"dtmi:base:EntityInterface;1","@type":"Interface","contents":[{"@type":"Property","name":"Id","schema":"long"}],"displayName":"EntityInterface"}

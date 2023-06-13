@@ -1,0 +1,1 @@
+{"@context":"dtmi:dtdl:context;2","@id":"dtmi:entity:OutageBag;1","@type":"Interface","contents":[{"@type":"Property","name":"IsInactive","schema":"boolean"},{"@type":"Property","name":"MaxOutagedCutsets","schema":"integer"},{"@type":"Relationship","name":"edge_OutageBag_Cutset","target":"dtmi:entity:Cutset;1"}],"displayName":"OutageBag","extends":["dtmi:base:EntityInterface;1"]}

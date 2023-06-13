@@ -116,3 +116,177 @@ SentFactsTotal: long)
   ProbesMeasures
   | distinct ProbeType
 }
+
+
+
+.create-or-alter function  GetScenarioMetadata() {
+let ScenarioData=
+  ScenarioMetadata
+  | project ScenarioId, Name, UpdateTime
+  | summarize by ScenarioId, Name;
+ScenarioRunMetadata
+| lookup kind= leftouter (ScenarioData) on ScenarioId
+| extend SimulationRun = tostring(SimulationRun)
+}
+.create-or-alter function UpdateGetSimulations ()
+{ProbesMeasures
+  | distinct SimulationRun, SimulationDate, SimulationName
+}
+ 
+.set-or-append GetSimulations <| UpdateGetSimulations
+
+.alter table GetSimulations policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateGetSimulations()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeBudget ()
+{GetMeasures("Budget")
+| evaluate bag_unpack(Expenses, "Expenses_")}
+
+.set-or-append ProbeBudget <| UpdateProbeBudget
+
+.alter table ProbeBudget policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeBudget()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeComponentFailure_Consequences_aggregated ()
+{GetMeasures("ComponentFailure_Consequences_aggregated")}
+
+.set-or-append ProbeComponentFailure_Consequences_aggregated <| UpdateProbeComponentFailure_Consequences_aggregated
+
+.alter table ProbeComponentFailure_Consequences_aggregated policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeComponentFailure_Consequences_aggregated()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeCutsetStatus_Consequences_aggregated ()
+{GetMeasures("CutsetStatus_Consequences_aggregated")}
+
+.set-or-append ProbeCutsetStatus_Consequences_aggregated <| UpdateProbeCutsetStatus_Consequences_aggregated
+
+.alter table ProbeCutsetStatus_Consequences_aggregated policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeCutsetStatus_Consequences_aggregated()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeCutsetStatus ()
+{GetMeasures("CutsetStatus")}
+
+.set-or-append ProbeCutsetStatus <| UpdateProbeCutsetStatus
+
+.alter table ProbeCutsetStatus policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeCutsetStatus()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeEquipment() {
+GetMeasures("Equipment")
+| evaluate bag_unpack(Family, "Family_")
+| extend SimulationRun = tostring(SimulationRun)
+}
+
+.set-or-append ProbeEquipment <| UpdateProbeEquipment
+
+.alter table ProbeEquipment policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeEquipment()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeExpenditure_aggregated ()
+{GetMeasures("Expenditure_aggregated")}
+
+.set-or-append ProbeExpenditure_aggregated <| UpdateProbeExpenditure_aggregated
+
+.alter table ProbeExpenditure_aggregated policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeExpenditure_aggregated()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeFailures_detailed ()
+{GetMeasures("Failures_detailed")}
+
+.set-or-append ProbeFailures_detailed <| UpdateProbeFailures_detailed
+
+.alter table ProbeFailures_detailed policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeFailures_detailed()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeFamily ()
+{GetMeasures("Family")}
+
+.set-or-append ProbeFamily <| UpdateProbeFamily
+
+.alter table ProbeFamily policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeFamily()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeFinance ()
+{GetMeasures("Finance")
+| evaluate bag_unpack(Ind, "Ind_")}
+
+.set-or-append ProbeFinance <| UpdateProbeFinance
+
+.alter table ProbeFinance policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeFinance()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeHR ()
+{GetMeasures("HR")
+| evaluate bag_unpack(AvgWorkloadInFTE, "AvgWorkloadInFTE_")}
+
+.set-or-append ProbeHR <| UpdateProbeHR
+
+.alter table ProbeHR policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeHR()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeNetwork_aggregated ()
+{GetMeasures("Network_aggregated")}
+
+.set-or-append ProbeNetwork_aggregated <| UpdateProbeNetwork_aggregated
+
+.alter table ProbeNetwork_aggregated policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeNetwork_aggregated()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeNetwork ()
+{GetMeasures("Network")}
+
+.set-or-append ProbeNetwork <| UpdateProbeNetwork
+
+.alter table ProbeNetwork policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeNetwork()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeOperations_agg_by_policy ()
+{GetMeasures("Operations_agg_by_policy")
+| evaluate bag_unpack(Op, "Op_")
+| evaluate bag_unpack(TP, "TP_")}
+
+.set-or-append ProbeOperations_agg_by_policy <| UpdateProbeOperations_agg_by_policy
+
+.alter table ProbeOperations_agg_by_policy policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeOperations_agg_by_policy()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeOperations_aggregated ()
+{GetMeasures("Operations_aggregated")
+| evaluate bag_unpack(Op, "Op_")}
+
+.set-or-append ProbeOperations_aggregated <| UpdateProbeOperations_aggregated
+
+.alter table ProbeOperations_aggregated policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeOperations_aggregated()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeOperations_detailed ()
+{GetMeasures("Operations_detailed")
+| evaluate bag_unpack(ActivityPlan, "ActivityPlan_")
+| evaluate bag_unpack(Op, "Op_")}
+
+.set-or-append ProbeOperations_detailed <|UpdateProbeOperations_detailed
+
+.alter table ProbeOperations_detailed policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeOperations_detailed()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeQuasiFailures_detailed ()
+{GetMeasures("QuasiFailures_detailed")}
+
+.set-or-append ProbeQuasiFailures_detailed <| UpdateProbeQuasiFailures_detailed
+
+.alter table ProbeQuasiFailures_detailed policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeQuasiFailures_detailed()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeResourcesByAction ()
+{GetMeasures("ResourcesByAction")
+| evaluate bag_unpack(ActivityPlan, "ActivityPlan_")
+| evaluate bag_unpack(Resource, "Resource_")}
+
+.set-or-append ProbeResourcesByAction <| UpdateProbeResourcesByAction
+
+.alter table ProbeResourcesByAction policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeResourcesByAction()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeSuboperations_detailed ()
+{GetMeasures("Suboperations_detailed")
+| evaluate bag_unpack(ActivityPlan, "ActivityPlan_")
+| evaluate bag_unpack(Eq, "Eq_")
+| evaluate bag_unpack(Op, "Op_")
+| evaluate bag_unpack(Subaction_family, "Subaction_family_")}
+
+.set-or-append ProbeSuboperations_detailed <| UpdateProbeSuboperations_detailed
+
+.alter table ProbeSuboperations_detailed policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeSuboperations_detailed()", "IsTransactional": false, "PropagateIngestionProperties": false}]';
+.create-or-alter function UpdateProbeTotalCost ()
+{GetMeasures("TotalCost")
+| evaluate bag_unpack(TotalCost, "TotalCost_")
+| evaluate bag_unpack(TotalCost_Actual, "TotalCost_Actual_")
+| evaluate bag_unpack(TotalCost_Raw, "TotalCost_Raw_")}
+
+.set-or-append ProbeTotalCost <| UpdateProbeTotalCost
+
+.alter table ProbeTotalCost policy update
+@'[{"IsEnabled": true, "Source": "ProbesMeasures", "Query": "UpdateProbeTotalCost()", "IsTransactional": false, "PropagateIngestionProperties": false}]';

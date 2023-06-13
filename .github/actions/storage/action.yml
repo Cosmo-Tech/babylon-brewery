@@ -16,7 +16,7 @@ runs:
       if: ${{ inputs.name == '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon azure storage container create -s
+        babylon azure storage container create
       shell: bash
 
     - name: Create storage container name given

@@ -1,0 +1,1 @@
+{"@context":"dtmi:dtdl:context;2","@id":"dtmi:entity:Team;1","@type":"Interface","contents":[{"@type":"Property","name":"TeamDailyCostRate","schema":"double"}],"displayName":"Team","extends":["dtmi:entity:Resource;1"]}

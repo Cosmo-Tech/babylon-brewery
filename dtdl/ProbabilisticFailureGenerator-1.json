@@ -1,0 +1,1 @@
+{"@context":"dtmi:dtdl:context;2","@id":"dtmi:entity:ProbabilisticFailureGenerator;1","@type":"Interface","contents":[{"@type":"Property","name":"RandomizedSeed","schema":"boolean"},{"@type":"Property","name":"Seed","schema":"long"}],"displayName":"ProbabilisticFailureGenerator","extends":["dtmi:base:EntityInterface;1"]}

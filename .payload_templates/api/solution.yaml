@@ -1,9 +1,15 @@
 key: "${solution_key}"
 name: "${solution_name}"
-description: ""
+description: Asset
 repository: "${deploy['simulator_repository']}"
 version: "${deploy['simulator_version']}"
 tags:
+- Asset
+parameters:
+parameterGroups:
+runTemplates:
+- id: common
+  name: Standard simulationtags:
   - '1day'
   - 'Brewery'
 parameters:
@@ -487,3 +493,36 @@ runTemplates:
       - 'custom high cpu'
     parameterGroups:
       - 'bar_parameters'
+
+  description: MR Simulation
+  csmSimulation: AzureWebApp/AzureWebApp_Simulation
+  tags:
+  - MR
+  - Asset
+  computeSize:
+  runSizing:
+  noDataIngestionState:
+  fetchDatasets: true
+  scenarioDataDownloadTransform:
+  fetchScenarioParameters: true
+  applyParameters: true
+  validateData:
+  sendDatasetsToDataWarehouse: false
+  sendInputParametersToDataWarehouse: false
+  preRun: true
+  run: true
+  postRun:
+  parametersJson:
+  parametersHandlerSource:
+  datasetValidatorSource:
+  preRunSource:
+  runSource: local
+  postRunSource:
+  scenariodataTransformSource:
+  parameterGroups:
+  stackSteps:
+  gitRepositoryUrl:
+  gitBranchName:
+  runTemplateSourceDir:
+  executionTimeout:
+  deleteHistoricalData:
