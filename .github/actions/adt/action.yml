@@ -14,16 +14,24 @@ runs:
         babylon azure adt instance create -s
       shell: bash
 
-    - name: add permissions
+    - name: add permissions Reader
       run: |
         cd ${{ inputs.folder }}
         babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
       shell: bash
 
-    - name: add permissions
+    - name: add permissions Owner
       run: |
         cd ${{ inputs.folder }}
         babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+      shell: bash
+
+    - name: add permissions Owner and Reader
+      run: |
+        cd ${{ inputs.folder }}
+        team_id=$(babylon config get-variable platform azure_team_id)
+        babylon azure permission set -pi $team_id -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
+        babylon azure permission set -pi $team_id -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
       shell: bash
 
     - name: run script

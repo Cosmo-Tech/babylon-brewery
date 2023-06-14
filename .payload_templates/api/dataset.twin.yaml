@@ -7,7 +7,7 @@ tags:
   - RefDataSample
   - dataset
 connector:
-  id: "${deploy['storage_connector_id']}"
+  id: "${deploy['twin_connector_id']}"
   name: TwinCache Connector
   version: 0.1.1
   parametersValues:
