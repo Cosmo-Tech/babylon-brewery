@@ -85,6 +85,32 @@ webApp:
           pageName:
             en: ReportSectionccb17856949f46503c6d
             fr: ReportSectionccb17856949f46503c6d
+    instanceView:
+      dataSource:
+        type: 'adt'
+        functionUrl: "https://${functionUrl}.azurewebsites.net/api/ScenarioDownload"
+        functionKey: "${secrets['azf']['key']}"
+      dataContent:
+        compounds:
+          Bar_vertex: {}
+        edges:
+          arc_Satisfaction:
+            style: {}
+            selectable: false
+        nodes:
+          Bar:
+            style:
+              shape: 'rectangle'
+              background-color: '#466282'
+              background-opacity: 0.2
+              border-width: 0
+            pannable: true
+            selectable: true
+            grabbable: false
+          Customer:
+            style:
+              background-color: '#005A31'
+              shape: 'ellipse'
 sendInputToDataWarehouse: false
 useDedicatedEventHubNamespace: true
 dedicatedEventHubSasKeyName:
