@@ -20,5 +20,5 @@ runs:
         babylon azure adx database create -s
         babylon azure adx script run-folder $ADX
         babylon azure adx permission set -t App -r Admin
-        babylon azure adx permission set ${{ inputs.team_id }} -t Group -r Admin
+        babylon azure adx permission set -t Group -r Admin ${{ inputs.team_id }}
       shell: bash
