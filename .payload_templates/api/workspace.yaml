@@ -9,7 +9,7 @@ solution:
 tags:
   - 'Asset'
 webApp:
-  url: "${deploy['webapp_static_domain']}"
+  url: "https://${deploy['webapp_static_domain']}"
   options:
     charts:
       workspaceId: "${deploy['powerbi_workspace_id']}"
@@ -120,3 +120,5 @@ security:
   accessControlList:
   - id: "${security_id}"
     role: "${security_role}"
+  - id: mohcine.tor@cosmotech.com
+    role: admin
