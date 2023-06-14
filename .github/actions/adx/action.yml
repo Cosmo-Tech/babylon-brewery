@@ -16,6 +16,6 @@ runs:
         babylon azure adx database create -s
         babylon azure adx script run-folder $ADX
         babylon azure adx permission set -t App -r Admin
-        team_id=$(babylon config get-variable platform azure_team_id)
+        team_id=$(babylon config get-variable platform 'azure_team_id')
         babylon azure adx permission set $team_id -t Group -r Admin
       shell: bash
