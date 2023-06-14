@@ -5,6 +5,10 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
+  team_id:
+    description: 'azure team id'
+    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -22,6 +26,7 @@ runs:
         adx_cluster_pi=$(babylon config get-variable platform "adx_cluster_object_id")
         babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi $adx_cluster_pi -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
         babylon azure permission set -rt Microsoft.EventHub/Namespaces -ri 2b629674-e913-4c01-ae53-ef4638d8f975
+        babylon azure permission set ${{ inputs.team_id }} -rt Microsoft.EventHub/Namespaces -ri b24988ac-6180-42a0-ab88-20f7382dd24c
       shell: bash
 
     - name: create connections
