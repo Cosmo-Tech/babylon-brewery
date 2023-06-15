@@ -10,12 +10,10 @@ runs:
   steps:
     - name: Azure Data Explorer deployment
       env:
-        ADX: ${{ github.action_path }}/../../../adx/${{ env.PLATFORM_ID }}
+        ADX: ${{ github.action_path }}/../../../adx
       run: |
         cd ${{ inputs.folder }}
-        babylon azure adx database create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type User --role Admin %azure%user_principal_id  
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type Group --role Admin %azure%team_id
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type App --role Admin %platform%principal_id
-        babylon azure adx script run-folder $ADX -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon azure adx database create -s
+        babylon azure adx script run-folder $ADX
+        babylon azure adx permission set -t App -r Admin
       shell: bash

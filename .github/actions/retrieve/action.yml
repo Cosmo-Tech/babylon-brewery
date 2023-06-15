@@ -32,6 +32,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: set variables in config
+      run: |
+        cd ${{ inputs.folder }}
+        babylon config set-variable deploy webapp_repository "https://github.com/${{ inputs.repo_to }}"
+        babylon config set-variable deploy webapp_repository_branch ${{ inputs.repo_to_branch }}
+      shell: bash
+      
     - name: Clone any version of sample Web App
       run: |
         git config --global pull.rebase true
