@@ -1,0 +1,31 @@
+name: PowerBI Action
+description: PowerBI deployment
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  workspace_name: 
+    description: "report powerbi name"
+    required: true
+    default: ""
+  database_name:
+    description: "adx cluster database"
+    required: true
+    default: ""    
+  cluster_name:
+    description: "adx cluster url"
+    required: true
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: PowerBI deployment
+      env:
+        POWERBI: ${{ github.action_path }}/../../../powerbi
+        database_name: ${{ inputs.database_name }}
+        cluster_name: ${{ inputs.cluster_name }}
+      run: |
+        cd ${{ inputs.folder }}
+        babylon powerbi deploy-workspace "${{ inputs.workspace_name }}" -f "$POWERBI" -p ADX_DATABASE "$database_name" -p ADX_CLUSTER "$cluster_name"
+      shell: bash

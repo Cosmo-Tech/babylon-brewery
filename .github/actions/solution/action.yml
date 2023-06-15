@@ -14,8 +14,8 @@ runs:
   steps:
     - name: Solution deployment
       env:
-        API: ${{ github.action_path }}/../../.payload_templates/api
+        API: ${{ github.action_path }}/../../../.payload_templates/api
       run: |
         cd ${{ inputs.folder }}
-        babylon api solution create ${{ inputs.name }} -i $API/solution.yaml --select
+        babylon api solution create "${{ inputs.name }}" -i $API/solution.yaml --select
       shell: bash

@@ -19,9 +19,9 @@ runs:
     - name: Dataset deployment
       env:
         name: ${{ inputs.name }}
-        API: ${{ github.action_path }}/.payload_templates/api
-        type: ${{ inputs.type }} | tr [:upper:] [:lower:]
+        API: ${{ github.action_path }}/../../../.payload_templates/api
+        type: ${{ inputs.type }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api dataset create $name -i "$API/dataset.$type.yaml" -t $type -s
+        babylon api dataset create "$name" -i "$API/dataset.$type.yaml" -t $type -s
       shell: bash

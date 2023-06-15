@@ -1,0 +1,19 @@
+name: "${dataset_name}"
+description: Brewery reference model in ADT
+organizationId: "${deploy['organization_id']}"
+tags:
+  - ADT
+  - ASSET
+  - RefDataSample
+  - dataset
+connector:
+  id: "${deploy['twin_connector_id']}"
+  name: TwinCache Connector
+  version: 0.1.1
+  parametersValues:
+    TWIN_CACHE_NAME: "${deploy['twincache_graphid']}"
+    LOG_LEVEL: DEBUG
+compatibility:
+  - solutionKey:
+    minimumVersion: 15.0.0
+    maximumVersion:

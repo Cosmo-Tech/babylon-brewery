@@ -5,8 +5,8 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  adx_cluster_object_id:
-    description: 'Working-dir folder'
+  team_id:
+    description: 'azure team id'
     required: true
     default: ''
 runs:
@@ -14,12 +14,24 @@ runs:
   steps:
     - name: Event Hub Namespaces, connections and permissions deployment
       env:
-        ARM: ${{ github.action_path }}/../../.payload_templates/arm
+        ARM: ${{ github.action_path }}/../../../.payload_templates/arm
       run: |
         cd ${{ inputs.folder }}
         babylon azure arm runtmp -f $ARM/eventhub_deploy.json
-        babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi ${{ inputs.adx_cluster_object_id }} -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
+      shell: bash
+    
+    - name: add permissions
+      run: |
+        cd ${{ inputs.folder }}
+        adx_cluster_pi=$(babylon config get-variable platform "adx_cluster_object_id")
+        babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi $adx_cluster_pi -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
         babylon azure permission set -rt Microsoft.EventHub/Namespaces -ri 2b629674-e913-4c01-ae53-ef4638d8f975
+        babylon azure permission set -pi ${{ inputs.team_id }} -pt Group -rt Microsoft.EventHub/Namespaces -ri b24988ac-6180-42a0-ab88-20f7382dd24c
+      shell: bash
+
+    - name: create connections
+      run: |
+        cd ${{ inputs.folder }}
         babylon azure adx connections create "ProbesMeasures" JSON -tn "ProbesMeasures" 
         babylon azure adx connections create "ScenarioMetaData" CSV -tn "ScenarioMetadata" 
         babylon azure adx connections create "ScenarioRun" JSON -tn "SimulationTotalFacts" 

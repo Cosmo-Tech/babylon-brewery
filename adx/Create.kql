@@ -116,3 +116,18 @@ SentFactsTotal: long)
   ProbesMeasures
   | distinct ProbeType
 }
+
+
+.create-or-alter function  GetScenarioMetadata() {
+let ScenarioData=
+  ScenarioMetadata
+  | project ScenarioId, Name, UpdateTime
+  | summarize by ScenarioId, Name;
+ScenarioRunMetadata
+| lookup kind= leftouter (ScenarioData) on ScenarioId
+| extend SimulationRun = tostring(SimulationRun)
+}
+.create-or-alter function UpdateGetSimulations ()
+{ProbesMeasures
+  | distinct SimulationRun, SimulationDate, SimulationName
+}

@@ -36,6 +36,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: set variables in config
+      run: |
+        cd ${{ inputs.folder }}
+        babylon config set-variable deploy webapp_repository "https://github.com/${{ inputs.repo_to }}"
+        babylon config set-variable deploy webapp_repository_branch ${{ inputs.repo_to_branch }}
+      shell: bash
+      
     - name: Clone any version of sample Web App
       run: |
         git config --global pull.rebase true
@@ -48,7 +55,7 @@ runs:
         git add README.md
         git commit -m "first commit"
         git branch -M main
-        git remote add origin "https://oauth2:${{inputs.pat}}@github.com/${{ inputs.repo_to }}.git"
+        git remote add origin https://Cosmo-Tech:${{inputs.pat}}@github.com/${{ inputs.repo_to }}.git
         git remote add upstream https://oauth2:${{inputs.pat}}@github.com/${{ inputs.repo_from }}.git
         git remote set-url upstream --push "NO"
         git fetch --all
