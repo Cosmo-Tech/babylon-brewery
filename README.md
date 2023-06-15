@@ -1,9 +1,14 @@
 # Babylon Actions 
 (dev ref: babylon branch: ndon/deploy_test)
+<<<<<<< HEAD
+
+</br>
+=======
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 
 </br>
 
-This repository contains the instructions on how to deploy a brewery solution based on the Cosmo Tech Platform.
+This repository contains the instructions on how to deploy a Asset solution based on the Cosmo Tech Platform.
 
 ## Prerequisite
 
@@ -42,7 +47,28 @@ This repository contains the instructions on how to deploy a brewery solution ba
 > Complete your configuration files with required keys.
 
     configuration required:
+        platform:
+            api_url: 
+            api_scope: 
+            csm_platform_app_id: 
+            csm_object_platform_id: 
+            csm_platform_scope_id: 
+            azure_subscription: 
+            azure_tenant_id: 
+            babylon_client_id: 
+            babylon_principal_id: 
+            adx_cluster_name: 
+            adx_cluster_object_id: 
+            resource_group_name: 
+            csm_acr_registry_name: 
+            acr_registry_name: 
+            resources_location: 
+            storage_account_name: 
+            powerbi_api_scope: https://analysis.windows.net/powerbi/api/.default
+            azure_powerbi_group_id: 
+            azure_team_id: 
         deploy:
+<<<<<<< HEAD
             - api_url
             - api_scope
             - csm_platform_app_id
@@ -68,6 +94,20 @@ This repository contains the instructions on how to deploy a brewery solution ba
             - simulator_repository
             - simulator_version
 
+=======
+            workspace_key: 
+            api_url: 
+            resource_group_name: 
+            resources_location: 
+            csm_simulator_repository: 
+            simulator_repository: 
+            simulator_version: 
+            deployment_name: 
+            webapp_location: 
+            webapp_organization_url: https://cosmotech.com
+            twincache_graphid: 
+            powerbi_api_scope: https://analysis.windows.net/powerbi/api/.default
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 
 </br>
 
@@ -75,8 +115,13 @@ This repository contains the instructions on how to deploy a brewery solution ba
 ---
 
 ```yaml
+<<<<<<< HEAD
 name: Brewery Solution Test
   
+=======
+name: Asset Solution Test
+
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 env:
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -84,11 +129,16 @@ env:
 
 on:
   push:
+<<<<<<< HEAD
     branches: 
       - "babylon"
+=======
+    branches:
+      - asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 
 jobs:
-  babylon-deploy:
+  asset-deploy:
     runs-on: ubuntu-latest
     env:
       dir: personal
@@ -97,7 +147,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: install babylon
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/babylon@main
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/babylon@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with: 
           branch: ndon/deploy_test
     
@@ -113,12 +167,17 @@ jobs:
           cmd: yq -o=json $config_path/platform.yaml
     
       - name: setup babylon config
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/config@main
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/config@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with:
           deploy: ${{ steps.deploy.outputs.result }}
           platform: ${{ steps.platform.outputs.result }}
 
       - name: create a new organization
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/organization@main
         with:
           name: "Cosmo Tech Example"
@@ -137,11 +196,48 @@ jobs:
 
       - name: set pat in babylon for deploy
         uses: Cosmo-Tech/babylon-actions/.github/actions/pat@main
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/organization@asset
+        with:
+          name: "Asset Org Cosmo Tech"
+          email: <EMAIL>
+          role: admin
+
+      - name: create container storage by default
+        uses: Cosmo-Tech/babylon-actions/.github/actions/storage@asset
+        
+      - name: get azure team id
+        id: azureteam
+        run: |
+          cd $dir
+          azure_team_id=$(babylon config get-variable platform 'azure_team_id')
+          echo "azure_team_id=$azure_team_id" >> $GITHUB_OUTPUT
+
+      - name: deploy adx database and permissions
+        uses: Cosmo-Tech/babylon-actions/.github/actions/adx@asset
+        with:
+          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
+
+      - name: deploy adt instance and permissions
+        continue-on-error: true
+        uses: Cosmo-Tech/babylon-actions/.github/actions/adt@asset
+        with:
+          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
+
+      - name: deploy eventhub namespaces and permissions
+        uses: Cosmo-Tech/babylon-actions/.github/actions/eventhub@asset
+        with:
+          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
+
+      - name: set pat in babylon for deploy
+        uses: Cosmo-Tech/babylon-actions/.github/actions/pat@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with:
           pat: ${{ secrets.PAT }}
       
       - name: retrieve sample webapp
         continue-on-error: true
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/retrieve@main
         with:
           repo_from: Cosmo-Tech/azure-sample-webapp
@@ -150,6 +246,16 @@ jobs:
           repo_to_branch: <BRANCH_DEST>
           username: <USERNAME>
           email: example@cosmotech.com
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/retrieve@asset
+        with:
+          repo_from: Cosmo-Tech/azure-asset-dev-webapp
+          repo_tag: <ORIGIN>/<BRANCH>
+          repo_to: <OWNER>/<REPO_NAME>
+          repo_to_branch: <BRANCH>
+          username: <USERNAME>
+          email: <EMAIL>
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
           pat: ${{ secrets.PAT }}
 
       - name: Retrieve babylon variables
@@ -172,7 +278,9 @@ jobs:
           echo "hostname=$(babylon config get-variable deploy 'webapp_static_domain')" >> $GITHUB_OUTPUT
           echo "dadt=$(babylon config get-variable deploy 'adt_dataset_id')" >> $GITHUB_OUTPUT
           echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
+      
 
+<<<<<<< HEAD
       - name: deploy workspace powerbi
         uses: Cosmo-Tech/babylon-actions/.github/actions/powerbi@main
         with:
@@ -185,6 +293,13 @@ jobs:
         uses: Cosmo-Tech/babylon-actions/.github/actions/webapp@main
         with:
           powerbi: true
+=======
+      - name: deploy webapp
+        continue-on-error: true
+        uses: Cosmo-Tech/babylon-actions/.github/actions/webapp@asset
+        with:
+          powerbi: false
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
           azf: true
 
       - name: az login
@@ -220,24 +335,50 @@ jobs:
         run: |
           cd $dir
           babylon config set-variable secrets eventhub.key ${{ steps.hub.outputs.hub_key }}
+<<<<<<< HEAD
 
       - name: create adt connector
         uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
+=======
+
+      - name: create twin connector
+        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
+        with:
+          type: twin
+          name: "Asset Baby Connector Twin"
+
+      - name: create adt connector
+        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with:
           type: adt
-          name: "Brewery Baby Connector ADT test"
+          name: "Asset Baby Connector ADT"
 
       - name: create connector storage
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with:
           type: storage
-          name: "Brewery Baby connector STORAGE"
+          name: "Asset Baby connector STORAGE"
 
       - name: create dataset adt
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@main
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@asset
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
         with:
           type: adt
-          name: "Brewery Baby dataset ADT"
+          name: "Asset Baby dataset ADT"
+
+      - name: create dataset twin
+        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@asset
+        with:
+          type: twin
+          name: "Asset Baby dataset Twin"
 
       - name: Retrieve babylon variables
         id: baby_wpi
@@ -246,6 +387,7 @@ jobs:
           echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
 
       - name: add adt permission to webapp
+<<<<<<< HEAD
         uses: Cosmo-Tech/babylon-actions/.github/actions/permission@main
         with:
           pi: ${{ steps.baby_wpi.outputs.wpi }}
@@ -263,6 +405,23 @@ jobs:
         with:
           name: Brewery Baby Workspace
           email: example@cosmotech.com
+=======
+        uses: Cosmo-Tech/babylon-actions/.github/actions/permission@asset
+        with:
+          pi: ${{ steps.baby_wpi.outputs.wpi }}
+          ri: Microsoft.DigitalTwins/digitalTwinsInstances
+
+      - name: create solution Asset
+        uses: Cosmo-Tech/babylon-actions/.github/actions/solution@asset
+        with:
+          name: "Asset Solution Test"
+
+      - name: create workspace Asset
+        uses: Cosmo-Tech/babylon-actions/.github/actions/workspace@asset
+        with:
+          name: Asset Baby Workspace
+          email: <EMAIL>
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 
       - name: set key api
         run: |
@@ -584,7 +743,10 @@ babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTIO
 </br>
 
 ```bash
+<<<<<<< HEAD
 .
+=======
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 ├── .github
 │   └── actions
 │       ├── adt
@@ -600,6 +762,12 @@ babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTIO
 │       │   └── action.yml
 │       ├── dataset
 │       │   └── action.yml
+<<<<<<< HEAD
+=======
+│       ├── dispatch
+│       │   ├── action.yml
+│       │   └── dispatch.py
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 │       ├── eventhub
 │       │   └── action.yml
 │       ├── organization
@@ -620,12 +788,18 @@ babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTIO
 │       │   └── action.yml
 │       └── workspace
 │           └── action.yml
+<<<<<<< HEAD
+=======
+├── .gitignore
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 ├── .payload_templates
 │   ├── api
 │   │   ├── connector.adt.yaml
 │   │   ├── connector.storage.yaml
+│   │   ├── connector.twin.yaml
 │   │   ├── dataset.adt.yaml
 │   │   ├── dataset.storage.yaml
+│   │   ├── dataset.twin.yaml
 │   │   ├── organization.yaml
 │   │   ├── send_key.yaml
 │   │   ├── solution.yaml
@@ -642,10 +816,15 @@ babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTIO
 │       ├── webapp_config.json
 │       ├── webapp_details.json
 │       └── webapp_settings.json
+<<<<<<< HEAD
 ├── powerbi
 │   └── brewery_report.pbix
 ├── README.md
 └── terraform_cloud
     ├── tfc_variables_create.yaml
     └── tfc_workspace_create.yaml
+=======
+└── README.md
+
+>>>>>>> 45d5ff30678060294e20a5a27acce3ac69600c7d
 ```
