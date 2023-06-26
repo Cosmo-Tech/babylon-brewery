@@ -1,5 +1,5 @@
 name: "${dataset_name}"
-description: Brewery reference model in ADT
+description: Asset reference model in ADT
 organizationId: "${deploy['organization_id']}"
 tags:
   - dataset_part

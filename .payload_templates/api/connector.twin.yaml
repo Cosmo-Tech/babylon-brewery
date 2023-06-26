@@ -6,6 +6,8 @@ description: Connector for CosmoTech TwinCache. Read TwinCache and write the dat
 tags:
   - 'TwinCache'
 url: https://github.com/Cosmo-Tech/twincache-connector/pkgs/container/twincache-connector
+ioTypes:
+- read
 parameterGroups:
   - id: parameters
     label: Parameters
