@@ -14,6 +14,6 @@ connector:
     TWIN_CACHE_NAME: "${deploy['twincache_graphid']}"
     LOG_LEVEL: DEBUG
 compatibility:
-  - solutionKey:
+  - solutionKey: ASSET
     minimumVersion: 15.0.0
     maximumVersion:
