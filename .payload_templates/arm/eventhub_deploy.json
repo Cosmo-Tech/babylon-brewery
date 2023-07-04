@@ -17,7 +17,7 @@
             "sku": {
                 "name": "Standard",
                 "tier": "Standard",
-                "capacity": 9
+                "capacity": 2
             },
             "properties": {
                 "minimumTlsVersion": "1.0",
