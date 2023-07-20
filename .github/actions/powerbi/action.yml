@@ -39,5 +39,6 @@ runs:
         babylon config set-variable deploy 'dataset_id' $id
         babylon powerbi workspace user add -w "$pwid" "${{ inputs.user_name }}"  User Member
         dID=$(babylon config get-variable deploy 'dataset_id')
-        babylon powerbi dataset update-credentials -w "$pwid" "$dID"
+        echo "id_done"
+        babylon powerbi dataset update-credentials -w "$pwid" $dID
       shell: bash
