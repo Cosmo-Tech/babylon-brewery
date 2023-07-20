@@ -18,7 +18,7 @@ inputs:
     required: true
     default: ""
   user_name:
-    description: "add Access to user"
+    description: "add Access to user in powerBI"
     required: true 
     default: ""
 runs:
