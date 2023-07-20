@@ -17,15 +17,25 @@ inputs:
     description: "adx cluster url"
     required: true
     default: ""
+  user_name:
+    description: "add Access to user"
+    required: true 
+    default: ""
 runs:
   using: "composite"
   steps:
     - name: PowerBI deployment
       env:
-        POWERBI: ${{ github.action_path }}/../../../powerbi
+        POWERBI: ${{ github.action_path }}/../../../powerbi/*.pbix
         database_name: ${{ inputs.database_name }}
         cluster_name: ${{ inputs.cluster_name }}
       run: |
         cd ${{ inputs.folder }}
-        babylon powerbi deploy-workspace "${{ inputs.workspace_name }}" -f "$POWERBI" -p ADX_DATABASE "$database_name" -p ADX_CLUSTER "$cluster_name"
+        babylon powerbi workspace create "${{ inputs.workspace_name }}" 
+        babylon powerbi report upload -w "${deploy['powerbi_workspace_id']}" "$POWERBI"
+        dataset=$(babylon powerbi report get-all -w "${deploy['powerbi_workspace_id']}" --filter [0].datasetId)
+        id=$(echo "$dataset" | tr -d "'")
+        babylon config set-variable deploy 'datasetId' $id
+        babylon powerbi workspace user add -w "${deploy['powerbi_workspace_id']}" "${{ inputs.user_name }}"  User Member
+        babylon powerbi dataset update-credentials -w "${deploy['powerbi_workspace_id']}" "${deploy['datasetId']}"
       shell: bash
