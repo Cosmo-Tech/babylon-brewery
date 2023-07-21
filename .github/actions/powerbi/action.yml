@@ -33,7 +33,7 @@ runs:
         cd ${{ inputs.folder }}
         babylon powerbi workspace create "${{ inputs.workspace_name }}" -s
         pwid=$(babylon config get-variable deploy 'powerbi_workspace_id')
-        babylon powerbi report upload -w "$pwid" $POWERBI/*.pbix
+        babylon powerbi report upload -w "$pwid" $POWERBI/*.pbix -s
         dataset=$(babylon powerbi report get-all -w "$pwid" --filter [0].datasetId)
         id=$(echo "$dataset" | tr -d "'")
         babylon config set-variable deploy 'dataset_id' $id
