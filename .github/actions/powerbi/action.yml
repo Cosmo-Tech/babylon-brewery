@@ -37,8 +37,9 @@ runs:
         dataset=$(babylon powerbi report get-all -w "$pwid" --filter [0].datasetId)
         id=$(echo "$dataset" | tr -d "'")
         babylon config set-variable deploy 'dataset_id' $id
-        babylon powerbi workspace user add -w "$pwid" "${{ inputs.user_name }}"  User Member
+        babylon powerbi workspace user add -w "$pwid" "${{ inputs.user_name }}" User Admin
         dID=$(babylon config get-variable deploy 'dataset_id')
         babylon powerbi dataset take-over -w "$pwid" $dID
         babylon powerbi dataset update-credentials -w "$pwid" $dID
       shell: bash
+
