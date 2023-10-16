@@ -71,7 +71,6 @@ runs:
         babylon config set azure user_principal_id "${{ inputs.user_principal_id }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set api workspace_key "${{ inputs.workspace_key }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set powerbi dashboard_view -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-      # babylon config set powerbi scenario_view -c brewery -p perf 
         babylon config set azure team_id "${{ inputs.team_id }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set acr simulator_repository "${{ inputs.simulator_image_docker }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set acr simulator_version "${{ inputs.simulator_version }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
@@ -81,7 +80,6 @@ runs:
         babylon config set github branch "${{ inputs.repo_to_branch }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set github organization "${{ inputs.organization }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set github repository "${{ inputs.repo_to }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        # setup run_templates
         babylon config set api run_templates -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --item "common"
       shell: bash
 
