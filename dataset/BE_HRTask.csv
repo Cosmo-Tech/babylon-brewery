@@ -1,0 +1,73 @@
+id,Label,Skill,ActionDurationPercentage,WorkforceFTE
+Inspection Inspection Contrôles Commande Local Main,Main,Inspection,100,1.0
+Inspection Inspection Disjoncteurs Main,Main,Inspection,100,2.0
+Inspection Inspection Lignes Aériennes Main,Main,Inspection,100,3.0
+Inspection Inspection Lignes Souterraines Main,Main,Inspection,100,2.0
+Inspection Inspection Pylônes Main,Main,Inspection,100,2.0
+Inspection Inspection Sectionneurs Main,Main,Inspection,100,2.0
+Inspection Inspection Transformateurs de Mesure Main,Main,Inspection,100,1.0
+Inspection Inspection Transformateurs de Puissance Main,Main,Inspection,100,2.0
+Repairs Maintenance Contrôles Commande Local Main,Main,Repairs,100,0.0
+Repairs Maintenance Contrôles Commande Local Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Disjoncteurs Main,Main,Repairs,100,0.0
+Repairs Maintenance Disjoncteurs Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Lignes Aériennes Main,Main,Repairs,100,3.0
+Repairs Maintenance Lignes Aériennes Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Lignes Souterraines Main,Main,Repairs,100,2.0
+Repairs Maintenance Lignes Souterraines Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Pylônes Main,Main,Repairs,100,1.0
+Repairs Maintenance Pylônes Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Sectionneurs Main,Main,Repairs,100,0.0
+Repairs Maintenance Sectionneurs Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Transformateurs de Mesure Main,Main,Repairs,100,0.0
+Repairs Maintenance Transformateurs de Mesure Outage,Outage,PowerSwitch,10,1.0
+Repairs Maintenance Transformateurs de Puissance Main,Main,Repairs,100,0.0
+Repairs Maintenance Transformateurs de Puissance Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Contrôles Commande Local Main,Main,Repairs,100,2.0
+Repairs Repairs Contrôles Commande Local Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Disjoncteurs Main,Main,Repairs,100,2.0
+Repairs Repairs Disjoncteurs Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Lignes Aériennes Main,Main,Repairs,100,3.0
+Repairs Repairs Lignes Aériennes Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Lignes Souterraines Main,Main,Repairs,100,2.0
+Repairs Repairs Lignes Souterraines Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Pylônes Main,Main,Repairs,100,2.0
+Repairs Repairs Pylônes Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Sectionneurs Main,Main,Repairs,100,2.0
+Repairs Repairs Sectionneurs Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Transformateurs de Mesure Main,Main,Repairs,100,2.0
+Repairs Repairs Transformateurs de Mesure Outage,Outage,PowerSwitch,10,1.0
+Repairs Repairs Transformateurs de Puissance Main,Main,Repairs,100,2.0
+Repairs Repairs Transformateurs de Puissance Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Contrôles Commande Local Main,Main,Replacement,100,0.0
+Replacement Renewal Contrôles Commande Local Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Disjoncteurs Main,Main,Replacement,100,0.0
+Replacement Renewal Disjoncteurs Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Lignes Aériennes Main,Main,Replacement,100,0.0
+Replacement Renewal Lignes Aériennes Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Lignes Souterraines Main,Main,Replacement,100,0.0
+Replacement Renewal Lignes Souterraines Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Pylônes Main,Main,Replacement,100,0.0
+Replacement Renewal Pylônes Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Sectionneurs Main,Main,Replacement,100,0.0
+Replacement Renewal Sectionneurs Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Transformateurs de Mesure Main,Main,Replacement,100,0.0
+Replacement Renewal Transformateurs de Mesure Outage,Outage,PowerSwitch,10,1.0
+Replacement Renewal Transformateurs de Puissance Main,Main,Replacement,100,0.0
+Replacement Renewal Transformateurs de Puissance Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Contrôles Commande Local Main,Main,Replacement,100,0.0
+Replacement Replacement Contrôles Commande Local Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Disjoncteurs Main,Main,Replacement,100,0.0
+Replacement Replacement Disjoncteurs Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Lignes Aériennes Main,Main,Replacement,100,0.0
+Replacement Replacement Lignes Aériennes Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Lignes Souterraines Main,Main,Replacement,100,0.0
+Replacement Replacement Lignes Souterraines Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Pylônes Main,Main,Replacement,100,0.0
+Replacement Replacement Pylônes Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Sectionneurs Main,Main,Replacement,100,0.0
+Replacement Replacement Sectionneurs Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Transformateurs de Mesure Main,Main,Replacement,100,0.0
+Replacement Replacement Transformateurs de Mesure Outage,Outage,PowerSwitch,10,1.0
+Replacement Replacement Transformateurs de Puissance Main,Main,Replacement,100,0.0
+Replacement Replacement Transformateurs de Puissance Outage,Outage,PowerSwitch,10,1.0

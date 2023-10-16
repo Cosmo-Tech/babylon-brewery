@@ -6,22 +6,35 @@ inputs:
     required: true
     default: 'personal'
   type:
-    description: ''
+    description: 'connector type'
+    required: true
+    default: ''
+  version:
+    description: 'connector version'
     required: true
     default: ''
   name:
-    description: ''
+    description: 'connector name'
     required: true
     default: ''
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Connector deployment
       env:
         name: ${{ inputs.name }}
-        API: ${{ github.action_path }}/../../../.payload_templates/api
         type: ${{ inputs.type }}
+        version: ${{ inputs.version }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api connector create "$name" -i "$API/connector.$type.yaml" -t $type -s
+        babylon api connectors payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type $type
+        babylon api connector create "$name" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type $type --version $version 
       shell: bash

@@ -16,15 +16,23 @@ inputs:
   role:
     description: 'Organization role security'
     required: true
-    default: 'Admin'
+    default: 'admin'
+  context_id:
+    description: 'Organization Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Organization Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Create organization object
-      env:
-        API: ${{ github.action_path }}/../../../.payload_templates/api
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api organization create "${{ inputs.name }}" -i $API/organization.yaml -e ${{ inputs.email }} --security-role ${{ inputs.role }} --select
+        babylon api organizations payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api organizations create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api organizations security add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --email ${{ inputs.email }} --role ${{ inputs.role }}
       shell: bash

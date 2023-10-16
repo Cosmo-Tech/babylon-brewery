@@ -1,0 +1,25 @@
+name: Upload Dataset Action
+description: Upload the dataset to Container Storage 
+inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
+runs:
+  using: "composite"
+  steps:
+    - name: Upload dataset
+      env:
+        DATASET: ${{ github.action_path }}/../../../dataset
+      run: |
+        cd ${{ inputs.folder }}
+        babylon azure storage container upload -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --folder $DATASET
+      shell: bash

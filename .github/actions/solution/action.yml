@@ -9,13 +9,20 @@ inputs:
     description: "Solution Name"
     required: true
     default: ""
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Solution deployment
-      env:
-        API: ${{ github.action_path }}/../../../.payload_templates/api
       run: |
         cd ${{ inputs.folder }}
-        babylon api solution create "${{ inputs.name }}" -i $API/solution.yaml --select
+        babylon api solutions payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api solutions create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash

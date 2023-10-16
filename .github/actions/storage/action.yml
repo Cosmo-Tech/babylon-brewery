@@ -1,27 +1,25 @@
 name: Storage Container Deploy Action
-description: Create storage container name given
+description: Create storage container by default
 inputs:
   folder:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  name:
-    description: 'Container name'
-    required: false
-    default: ''
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Create storage container by default
-      if: ${{ inputs.name == '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon azure storage container create
-      shell: bash
-
-    - name: Create storage container name given
-      if: ${{ inputs.name != '' }}
-      run: |
-        cd ${{ inputs.folder }}
-        babylon azure storage container create "${{ inputs.name }}"
+        babylon azure storage container create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %azure%team_id --principal-type Group --resource-name %azure%storage_account_name
+        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
       shell: bash

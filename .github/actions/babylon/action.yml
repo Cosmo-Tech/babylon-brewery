@@ -5,11 +5,14 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  branch:
-    description: 'babylon branch'
+  context_id:
+    description: 'Context Name'
     required: true
-    default: 'main'
-
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -19,16 +22,12 @@ runs:
         python-version: "3.9"
     - name: install babylon packages
       run: |
-        git clone -b ${{ inputs.branch }} https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
+        git clone https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
         pip install -e . --quiet
       shell: bash
 
     - name: setup babylon
       run: |
-        echo 'export BABYLON_WORKING_DIRECTORY=.' >> ~/.bashrc
-        echo 'export BABYLON_CONFIG_DIRECTORY=./config' >> ~/.bashrc
-        source ~/.bashrc
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
-        babylon config init
-        babylon working-dir complete
+        babylon config init -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash

@@ -5,10 +5,14 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  team_id:
-    description: 'azure team id'
+  context_id:
+    description: 'Context Name'
     required: true
-    default: ''
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -17,8 +21,9 @@ runs:
         ADX: ${{ github.action_path }}/../../../adx
       run: |
         cd ${{ inputs.folder }}
-        babylon azure adx database create -s
-        babylon azure adx script run-folder $ADX
-        babylon azure adx permission set -t App -r Admin
-        babylon azure adx permission set -t Group -r Admin ${{ inputs.team_id }}
+        babylon azure adx database create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon azure adx permission set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-type User --role Admin %azure%user_principal_id  
+        babylon azure adx permission set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-type Group --role Admin %azure%team_id
+        babylon azure adx permission set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-type App --role Admin %platform%principal_id
+        babylon azure adx script run-folder $ADX -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash

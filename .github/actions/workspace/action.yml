@@ -6,22 +6,35 @@ inputs:
     required: true
     default: 'personal'
   name:
-    description: "Workspace Name"
+    description: 'Workspace name object'
     required: true
-    default: ""
+    default: ''
   email:
-    description: "Email"
+    description: 'Workspace email security'
     required: true
-    default: ""
+    default: ''
+  role:
+    description: 'Workspace role security'
+    required: true
+    default: 'Admin'
+  context_id:
+    description: 'Workspace Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Workspace Platform Name'
+    required: true
+    default: 'dev'
 
 runs:
   using: "composite"
   steps:
     - name: Workspace deployment
-      env:
-        API: ${{ github.action_path }}/../../../.payload_templates/api
-        email: ${{ inputs.email }}
+      if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api workspace create "${{ inputs.name }}" -i $API/workspace.yaml -e $email -r admin -s
+        babylon api workspaces payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api workspaces create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api workspaces security add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+        babylon api workspaces send-key -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash

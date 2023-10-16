@@ -5,41 +5,35 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  workspace_name: 
-    description: "report powerbi name"
+  name:
+    description: 'Workspace Powerbi Name'
     required: true
-    default: ""
-  database_name:
-    description: "adx cluster database"
+    default: ''
+  type_dashboard_view:
+    description: 'dashboard_view'
     required: true
-    default: ""    
-  cluster_name:
-    description: "adx cluster url"
+    default: ''
+  type_scenario_view:
+    description: 'scenario_view'
     required: true
-    default: ""
-  user_name:
-    description: "add Access to user in powerBI"
-    required: true 
-    default: ""
+    default: ''
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: PowerBI deployment
       env:
-        POWERBI: ${{ github.action_path }}/../../../powerbi
-        database_name: ${{ inputs.database_name }}
-        cluster_name: ${{ inputs.cluster_name }}
+        POWERBI: ${{ github.action_path }}/../../../powerbi/dashboard
       run: |
         cd ${{ inputs.folder }}
-        babylon powerbi workspace create "${{ inputs.workspace_name }}" -s
-        pwid=$(babylon config get-variable deploy 'powerbi_workspace_id')
-        babylon powerbi report upload -w "$pwid" $POWERBI/*.pbix -s
-        dataset=$(babylon powerbi report get-all -w "$pwid" --filter [0].datasetId)
-        id=$(echo "$dataset" | tr -d "'")
-        babylon config set-variable deploy 'dataset_id' $id
-        babylon powerbi workspace user add -w "$pwid" "${{ inputs.user_name }}" User Admin
-        dID=$(babylon config get-variable deploy 'dataset_id')
-        babylon powerbi dataset take-over -w "$pwid" $dID
-        babylon powerbi dataset update-credentials -w "$pwid" $dID
+        babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_dashboard_view }}" --folder $POWERBI/ --override
+      # babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $POWERBI/ --override  
       shell: bash
 

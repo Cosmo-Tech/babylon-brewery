@@ -1,0 +1,38 @@
+id,AssetClass,PreschedulingType,YearStart,YearEnd,BudgetCategories,EnablePendingActionRemoval,IsInactive,SchedulingLevel,NbRepAction1,Action2,CriteriaFormula
+C1 Repairs,Lignes Aériennes,Operational,2015,2055,"""[""C1 Repairs""]""",false,false,Level1,,,"{""AND"":[""C1_Repairs_criterion_Failure"",""C1_Repairs_criterion_AgeLTMin""]}"
+C1 Replace,Lignes Aériennes,Operational,2015,2055,"""[""C1 Replace"",""C1 Repairs""]""",false,false,Level1,3,Replacement Replacement Lignes Aériennes,"{""OR"":[{""AND"":[""C1_Replace_criterion_Failure"",""C1_Replace_criterion_AgeGEQMin""]},""C1_Replace_CustomData_criterion""]}"
+C2 Repairs,Lignes Souterraines,Operational,2015,2055,"""[""C2 Repairs""]""",false,false,Level1,,,"{""AND"":[""C2_Repairs_criterion_Failure"",""C2_Repairs_criterion_AgeLTMin""]}"
+C2 Replace,Lignes Souterraines,Operational,2015,2055,"""[""C2 Replace""]""",false,false,Level1,,,"{""AND"":[""C2_Replace_criterion_Failure"",""C2_Replace_criterion_AgeGEQMin""]}"
+C3,Disjoncteurs,Operational,2015,2055,"""[""C3""]""",false,false,Level1,,,"{""AND"":[""C3_criterion_Failure"",""C3_criterion_Operating""]}"
+C4,Sectionneurs,Operational,2015,2055,"""[""C4""]""",false,false,Level1,,,C4_criterion_Failure
+C5,Transformateurs de Mesure,Operational,2015,2055,"""[""C5""]""",false,false,Level1,,,C5_criterion_Failure
+C6,Pylônes,Operational,2015,2055,"""[""C6""]""",false,false,Level1,,,"{""AND"":[""C6_criterion_Failure"",""C6_criterion_AllImposedActionsDone""]}"
+C7,Contrôles Commande Local,Operational,2015,2055,"""[""C7""]""",false,false,Level1,,,C7_criterion_Failure
+C8,Transformateurs de Puissance,Operational,2015,2055,"""[""C8""]""",false,false,Level1,,,"{""AND"":[""C8_criterion_Failure"",""C8_criterion_QuasiFailure""]}"
+CB1 Inspection,Lignes Aériennes,Tactical,2015,2055,"""[""CB1 Inspection""]""",true,false,Level3,,,"{""AND"":[""CB1_Inspection_criterion_InspectionDowntime"",""CB1_Inspection_criterion_InspectionCostOfFailure""]}"
+CB1 Repairs,Lignes Aériennes,Tactical,2015,2055,"""[""CB1 Repairs""]""",true,false,,,,"{""AND"":[""CB1_Repairs_criterion_AgeLTMin"",""CB1_Repairs_criterion_QuantityLT"",""CB1_Repairs_criterion_StateGEQMin""]}"
+CB1 Replace,Lignes Aériennes,Tactical,2015,2055,"""[""CB1 Replace""]""",true,false,Level3,,,"{""AND"":[""CB1_Replace_criterion_StateGEQMin"",""CB1_Replace_criterion_AgeGEQMin""]}"
+CB2 Inspection,Lignes Souterraines,Tactical,2015,2055,"""[""CB2 Inspection""]""",true,false,Level3,,,"{""AND"":[""CB2_Inspection_criterion_InspectionDowntime"",""CB2_Inspection_criterion_InspectionPriorityScore""]}"
+CB2 Repairs,Lignes Souterraines,Tactical,2015,2055,"""[""CB2 Repairs""]""",true,false,Level3,,,"{""AND"":[""CB2_Repairs_criterion_StateGEQMin"",""CB2_Repairs_criterion_AgeLTMin"",""CB2_Repairs_criterion_QuantityGEQ""]}"
+CB2 Replace,Lignes Souterraines,Tactical,2015,2055,"""[""CB2 Replace""]""",true,false,Level3,,,"{""AND"":[""CB2_Replace_criterion_StateGEQMin"",""CB2_Replace_criterion_AgeGEQMin""]}"
+CB3,Disjoncteurs,Tactical,2015,2055,"""[""CB3""]""",true,false,,,,"{""AND"":[""CB3_criterion_StateGEQMin"",""CB3_criterion_Area"",""CB3_criterion_CustomData_Weight_Number""]}"
+CB3 Inspection,Disjoncteurs,Tactical,2015,2055,"""[""CB3 Inspection""]""",true,false,Level3,,,CB3_Inspection_criterion_InspectionDowntime
+CB4,Sectionneurs,Tactical,2015,2055,"""[""CB4""]""",true,false,Level3,,,"{""AND"":[""CB4_criterion_StateGEQMin"",""CB4_criterion_RateLevel""]}"
+CB4 Inspection,Sectionneurs,Tactical,2015,2055,"""[""CB4 Inspection""]""",true,false,Level3,,,CB4_Inspection_criterion_InspectionDowntime
+CB5,Transformateurs de Mesure,Tactical,2015,2055,"""[""CB5""]""",true,false,Level3,,,CB5_criterion_StateGEQMin
+CB6 0<=AAge<50,Disjoncteurs,Tactical,2015,2055,"""[""CB6 0<=AAge<50""]""",true,false,Level3,,,"{""AND"":[""CB6_0<=AAge<50_criterion_StateGEQMax"",""CB6_0<=AAge<50_criterion_StateLTMax""]}"
+CB6 110<=AAge,Disjoncteurs,Tactical,2015,2055,"""[""CB6 110<=AAge""]""",true,false,Level3,,,CB6_110<=AAge_criterion_StateGEQMax
+CB6 Inspection,Disjoncteurs,Tactical,2015,2055,"""[""CB6 Inspection""]""",true,false,Level3,,,CB6_Inspection_criterion_InspectionDowntime
+CB7 inspection peinture,Pylônes,Tactical,2015,2055,"""[""CB7""]""",true,false,Level3,,,CB7_inspecter_peinture
+CB7 peint,Pylônes,Tactical,2015,2055,"""[""CB7""]""",true,false,Level3,,,"{""AND"":[""CB7_peinture"",""CB7_Arealevel2_dummy_all_eq_are_in_NANTES""]}"
+CB8 Inspection,Transformateurs de Puissance,Tactical,2015,2055,"""[]""",false,false,Level3,,,"{""AND"":[""CB8_Inspection_criterion_InspectionDowntime"",{""OR"":[""CB8_Inspection_criterion_AgeLEQ"",{""AND"":[""CB8_Inspection_criterion_AgeGEQ"",""CB8_Inspection_criterion_AgeLEQ2""]}]}]}"
+LE Inspection,Lignes Entières,Tactical,2015,2055,"""[""LE Inspection""]""",true,false,Level3,,,"{""OR"":[""LE_Inspection_criterion_InspectionDowntime_1"",{""AND"":[""LE_Inspection_criterion_InspectionDowntime_2"",""LE_Inspection_criterion_StateGEQMin""]}]}"
+P6,Pylônes,Tactical,2015,2055,"""[""P6""]""",false,false,Level3,,,"{""AND"":[""P6_criterion_Downtime"",""P6_criterion_AllImposedActionsDone""]}"
+R1,Lignes Aériennes,Tactical,2015,2055,"""[""R1""]""",false,false,Level3,,,R1_criterion_AgeGEQMin
+R2,Lignes Souterraines,Tactical,2015,2055,"""[""R2""]""",false,false,Level3,,,R2_criterion_AgeGEQMin
+R3,Disjoncteurs,Tactical,2015,2055,"""[""R3""]""",false,false,Level3,,,R3_criterion_AgeGEQMin
+R4,Sectionneurs,Tactical,2015,2055,"""[""R4""]""",false,false,Level3,,,R4_criterion_AgeGEQMin
+R5,Transformateurs de Mesure,Tactical,2015,2055,"""[""R5""]""",false,false,Level3,,,R5_criterion_AgeGEQMin
+R6,Pylônes,Tactical,2015,2055,"""[""R6""]""",false,false,Level3,,,"{""AND"":[""R6_criterion_AgeGEQMin"",""R6_criterion_CustomData_Comment_String"",""R6_criterion_AllImposedActionsDone""]}"
+R7,Contrôles Commande Local,Tactical,2015,2055,"""[""R7""]""",false,false,Level3,,,R7_criterion_AgeGEQMin
+R8,Transformateurs de Puissance,Tactical,2015,2055,"""[""R8""]""",false,false,Level3,,,"{""AND"":[""R8_criterion_AgeGEQMin"",""R8_criterion_QuasiFailure""]}"

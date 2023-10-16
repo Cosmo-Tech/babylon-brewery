@@ -1,4 +1,4 @@
-name: Dataset Action
+name: Dataset Create Action
 description: Dataset deployment
 inputs:
   folder:
@@ -6,22 +6,30 @@ inputs:
     required: true
     default: 'personal'
   type:
-    description: ''
+    description: 'Dataset Type'
     required: true
     default: ''
   name:
-    description: ''
+    description: 'Dataset Name'
     required: true
     default: ''
+  context_id:
+    description: 'Context Name'
+    required: true
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Dataset deployment
       env:
         name: ${{ inputs.name }}
-        API: ${{ github.action_path }}/../../../.payload_templates/api
         type: ${{ inputs.type }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api dataset create "$name" -i "$API/dataset.$type.yaml" -t $type -s
+        babylon api datasets payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type $type
+        babylon api datasets create "$name" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type $type 
       shell: bash

@@ -5,45 +5,21 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  powerbi:
-    description: 'bool'
+  context_id:
+    description: 'Context Name'
     required: true
-    default: 'false'
-  azf:
-    description: 'bool'
+    default: 'asset'
+  platform_id:
+    description: 'Platform Name'
     required: true
-    default: 'false'
+    default: 'dev'
 runs:
   using: "composite"
   steps:
-    - name: webapp deployment without powerbi and azure function
-      if: ${{ inputs.powerbi == 'false' && inputs.azf == 'false'  }}
-      run: |
-        cd ${{ inputs.folder }}
-        babylon webapp deploy
-      shell: bash
-    
-    - name: webapp deployment with powerbi
-      if: ${{ inputs.powerbi == 'true' && inputs.azf == 'false' }}
-      run: |
-        cd ${{ inputs.folder }}
-        babylon webapp deploy --enable-powerbi
-      shell: bash
-    
-    - name: webapp deployment with azure function
-      if: ${{ inputs.powerbi == 'false' && inputs.azf == 'true' }}
-      env:
-        ARM: ${{ github.action_path }}/../../../.payload_templates/arm
-      run: |
-        cd ${{ inputs.folder }}
-        babylon webapp deploy --enable-azfunc --azfunc-path $ARM/azf_deploy.json
-      shell: bash
-    
     - name: webapp deployment with powerbi and azure function
-      env:
-        ARM: ${{ github.action_path }}/../../../.payload_templates/arm
-      if: ${{ inputs.powerbi == 'true' && inputs.azf == 'true'  }}
       run: |
         cd ${{ inputs.folder }}
-        babylon webapp deploy --enable-powerbi --enable-azfunc --azfunc-path $ARM/azf_deploy.json
+        babylon webapp deploy -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon powerbi workspace user add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} %app%principal_id App Admin
+        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %app%principal_id 
       shell: bash
