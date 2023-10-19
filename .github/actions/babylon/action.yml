@@ -5,6 +5,18 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
+  BABYLON_SERVICE:
+    description: ''
+    required: true
+    default: ''
+  BABYLON_TOKEN:
+    description: ''
+    required: true
+    default: ''
+  BABYLON_ORG_NAME:
+    description: ''
+    required: true
+    default: ''
   context_id:
     description: 'Context Name'
     required: true
@@ -29,5 +41,8 @@ runs:
     - name: setup babylon
       run: |
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
+        export BABYLON_SERVICE=${{ inputs.BABYLON_SERVICE }}
+        export BABYLON_TOKEN=${{ inputs.BABYLON_TOKEN }}
+        export BABYLON_ORG_NAME=${{ inputs.BABYLON_ORG_NAME }}
         babylon config init -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash
