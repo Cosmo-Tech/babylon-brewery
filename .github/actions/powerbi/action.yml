@@ -33,8 +33,8 @@ runs:
         POWERBI: ${{ github.action_path }}/../../../powerbi/dashboard
       run: |
         cd ${{ inputs.folder }}
-        export BABYLON_ENCODING_KEY=I6tMcwsbFPLOhqGM1tj1mYnv5QZdinHbwq68dBolUHk=
         babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_dashboard_view }}" --folder $POWERBI/ --override
+        export BABYLON_ENCODING_KEY=I6tMcwsbFPLOhqGM1tj1mYnv5QZdinHbwq68dBolUHk=
       # babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $POWERBI/ --override  
       shell: bash
 
