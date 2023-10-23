@@ -19,7 +19,8 @@ runs:
     - name: Create storage container by default
       run: |
         cd ${{ inputs.folder }}
-        babylon azure storage container create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        organization_id=$(babylon config get -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} api organization_id)
+        babylon azure storage container create $organization_id -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %azure%team_id --principal-type Group --resource-name %azure%storage_account_name
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
       shell: bash
