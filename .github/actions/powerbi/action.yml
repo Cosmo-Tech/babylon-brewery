@@ -13,10 +13,10 @@ inputs:
     description: 'dashboard_view'
     required: true
     default: ''
-  type_scenario_view:
-    description: 'scenario_view'
-    required: true
-    default: ''
+  # type_scenario_view:
+  #   description: 'scenario_view'
+  #   required: true
+  #   default: ''
   context_id:
     description: 'Context Name'
     required: true
