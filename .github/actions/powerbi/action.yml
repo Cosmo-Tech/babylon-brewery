@@ -5,7 +5,7 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  name:
+  workspace_name:
     description: 'Workspace Powerbi Name'
     required: true
     default: ''
