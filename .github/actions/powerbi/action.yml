@@ -5,6 +5,10 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
+  BABYLON_ENCODING_KEY:
+    description: 'BABYLON_ENCODING_KEY'
+    required: true
+    default: ''
   workspace_name:
     description: 'Workspace Powerbi Name'
     required: true
@@ -33,6 +37,7 @@ runs:
         POWERBI: ${{ github.action_path }}/../../../powerbi/dashboard
       run: |
         cd ${{ inputs.folder }}
+        export BABYLON_ENCODING_KEY=${{ inputs.BABYLON_ENCODING_KEY }}
         babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_dashboard_view }}" --folder $POWERBI/ --override
       # babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $POWERBI/ --override  
       shell: bash
