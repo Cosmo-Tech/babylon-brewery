@@ -23,6 +23,5 @@ runs:
     - name: Solution deployment
       run: |
         cd ${{ inputs.folder }}
-    #    babylon api solutions payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon api solutions create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash
