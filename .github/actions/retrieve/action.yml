@@ -29,6 +29,10 @@ inputs:
     description: 'Email'
     required: true
     default: ''
+  pat:
+    description: 'Personal Access Token Github (repo/workflows)'
+    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -44,8 +48,8 @@ runs:
         git add README.md
         git commit -m "first commit"
         git branch -M main
-        git remote add origin git@github.com:${{ inputs.repo_to }}.git
-        git remote add upstream git@github.com:${{ inputs.repo_from }}.git
+        git remote add origin https://Cosmo-Tech:${{inputs.pat}}@github.com/${{ inputs.repo_to }}.git
+        git remote add upstream https://oauth2:${{inputs.pat}}@github.com/${{ inputs.repo_from }}.git
         git remote set-url upstream --push "NO"
         git fetch --all --tags --prune
         git checkout -B ${{ inputs.repo_to_branch }} ${{ inputs.repo_tag }}
