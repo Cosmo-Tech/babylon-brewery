@@ -33,6 +33,7 @@ runs:
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
         cd ${{ inputs.folder }}
+        babylon config set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} powerbi scenario_view None 
         babylon api workspaces payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon api workspaces create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon api workspaces security add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --email ${{ inputs.email }} --role ${{ inputs.role }}
