@@ -80,6 +80,5 @@ runs:
         babylon config set github branch "${{ inputs.repo_to_branch }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set github organization "${{ inputs.organization }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set github repository "${{ inputs.repo_to }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon config set api run_templates -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --item "common"
       shell: bash
 
