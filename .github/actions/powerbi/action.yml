@@ -9,18 +9,22 @@ inputs:
     description: 'BABYLON_ENCODING_KEY'
     required: true
     default: ''
-  workspace_name:
-    description: 'Workspace Powerbi Name'
+  workspace_name_dashboard:
+    description: 'Workspace Powerbi Name dashboard'
+    required: true
+    default: ''
+  workspace_name_scenario:
+    description: 'Workspace Powerbi Name scenario'
     required: true
     default: ''
   type_dashboard_view:
     description: 'dashboard_view'
     required: true
     default: ''
-  # type_scenario_view:
-  #   description: 'scenario_view'
-  #   required: true
-  #   default: ''
+  type_scenario_view:
+    description: 'scenario_view'
+    required: true
+    default: ''
   context_id:
     description: 'Context Name'
     required: true
@@ -34,11 +38,12 @@ runs:
   steps:
     - name: PowerBI deployment
       env:
-        POWERBI: ${{ github.action_path }}/../../../powerbi/dashboard
+        powerbi_dashboard_view: ${{ github.action_path }}/../../../powerbi/dashboard
+        powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario
       run: |
         cd ${{ inputs.folder }}
         export BABYLON_ENCODING_KEY=${{ inputs.BABYLON_ENCODING_KEY }}
-        babylon powerbi workspace deploy "${{ inputs.workspace_name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type ${{ inputs.type_dashboard_view }} --folder $POWERBI/ --override
-      # babylon powerbi workspace deploy "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $POWERBI/ --override  
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type ${{ inputs.type_dashboard_view }} --folder $powerbi_dashboard_view/ --override
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $powerbi_scenario_view/ --override  
       shell: bash
 
