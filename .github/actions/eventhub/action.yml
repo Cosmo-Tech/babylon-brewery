@@ -21,11 +21,9 @@ runs:
   using: "composite"
   steps:
     - name: Event Hub Namespaces, connections and permissions deployment
-      env:
-        name: ${{ inputs.name }}
       run: |
         cd ${{ inputs.folder }}
-        babylon azure arm run "$name" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --file %templates%/arm/eventhub_deploy.json 
+        babylon azure arm run ${{ inputs.name }} -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --file %templates%/arm/eventhub_deploy.json 
       shell: bash
     
     - name: add permissions
@@ -34,7 +32,7 @@ runs:
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_receiver --principal-id %adx%cluster_principal_id
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %platform%principal_id
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %babylon%principal_id
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-id %azure%team_id  --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
+        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-id %azure%team_id --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
       shell: bash
 
     - name: add consumer group 
