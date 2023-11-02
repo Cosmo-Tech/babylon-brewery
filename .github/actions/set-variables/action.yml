@@ -61,6 +61,10 @@ inputs:
     description: 'Github Organisation Cosmo-Tech'
     required: true
     default: ''
+  api_url:
+    description: 'API url'
+    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -81,5 +85,6 @@ runs:
         babylon config set github organization "${{ inputs.organization }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set github repository "${{ inputs.repo_to }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
         babylon config set api run_templates -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --item "common"
+        babylon config set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} api url ${{ inputs.api_url }}
       shell: bash
 

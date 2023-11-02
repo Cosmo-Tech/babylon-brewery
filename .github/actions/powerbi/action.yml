@@ -5,10 +5,6 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  BABYLON_ENCODING_KEY:
-    description: 'BABYLON_ENCODING_KEY'
-    required: true
-    default: ''
   workspace_name_dashboard:
     description: 'Workspace Powerbi Name dashboard'
     required: true
@@ -42,7 +38,6 @@ runs:
         powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario
       run: |
         cd ${{ inputs.folder }}
-        export BABYLON_ENCODING_KEY=${{ inputs.BABYLON_ENCODING_KEY }}
         babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type ${{ inputs.type_dashboard_view }} --folder $powerbi_dashboard_view/ --override
         babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $powerbi_scenario_view/ --override  
       shell: bash
