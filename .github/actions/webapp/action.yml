@@ -19,7 +19,7 @@ runs:
     - name: webapp deployment with powerbi and azure function
       run: |
         cd ${{ inputs.folder }}
-        babylon webapp deploy -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon webapp deploy -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --with-azf true
         babylon powerbi workspace user add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} %app%principal_id App Admin
         babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %app%principal_id 
       shell: bash
