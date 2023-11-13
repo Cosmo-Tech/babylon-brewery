@@ -25,5 +25,5 @@ runs:
         cd ${{ inputs.folder }}
         database_name=$(babylon config get -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} adx database_name) 
         azf_key=$(az functionapp keys list -g ${{ inputs.resource_group }} -n $database_name --query masterKey)
-        babylon hvac set project eventhub $azf_key -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon hvac set project func $azf_key -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
       shell: bash
