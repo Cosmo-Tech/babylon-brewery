@@ -5,14 +5,6 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -29,5 +21,5 @@ runs:
     - name: setup babylon
       run: |
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
-        babylon config init -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon config init -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
       shell: bash

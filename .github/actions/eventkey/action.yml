@@ -5,14 +5,6 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
   resource_group:
     description: 'resource_group'
     required: true
@@ -23,7 +15,7 @@ runs:
     - name: Authentication Eventhub configuration
       run: |
         cd ${{ inputs.folder }}
-        database_name=$(babylon config get -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} adx database_name) 
+        database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} adx database_name) 
         eventkey=$(az eventhubs namespace authorization-rule keys list -g ${{ inputs.resource_group }} --namespace-name $database_name --name RootManageSharedAccessKey --query primaryKey)
-        babylon hvac set project eventhub $eventkey -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon hvac set project eventhub $eventkey -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
       shell: bash

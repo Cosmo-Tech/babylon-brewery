@@ -9,46 +9,38 @@ inputs:
     description: ''
     required: true
     default: ''
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Event Hub Namespaces, connections and permissions deployment
       run: |
         cd ${{ inputs.folder }}
-        babylon azure arm run ${{ inputs.name }} -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --file %templates%/arm/eventhub_deploy.json 
+        babylon azure arm run ${{ inputs.name }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file %templates%/arm/eventhub_deploy.json 
       shell: bash
     
     - name: add permissions
       run: |
         cd ${{ inputs.folder }}
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_receiver --principal-id %adx%cluster_principal_id
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %platform%principal_id
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %babylon%principal_id
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --principal-id %azure%team_id --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_receiver --principal-id %adx%cluster_principal_id
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %platform%principal_id
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %babylon%principal_id
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-id %azure%team_id --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
       shell: bash
 
     - name: add consumer group 
       run: |
         cd ${{ inputs.folder }}
-        babylon azure adx consumer add "adx" "ProbesMeasures" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon azure adx consumer add "adx" "ScenarioMetaData" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon azure adx consumer add "adx" "ScenarioRun" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon azure adx consumer add "adx" "ScenarioRunMetaData" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}       
+        babylon azure adx consumer add "adx" "ProbesMeasures" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon azure adx consumer add "adx" "ScenarioMetaData" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon azure adx consumer add "adx" "ScenarioRun" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon azure adx consumer add "adx" "ScenarioRunMetaData" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}       
       shell: bash
 
     - name: create connections
       run: |
         cd ${{ inputs.folder }}
-        babylon azure adx connections create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} ProbesMeasures %adx%database_name --data-format JSON --table-name ProbesMeasures --compression GZip  --consumer-group adx --mapping ProbesMeasuresMapping
-        babylon azure adx connections create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} ScenarioMetaData %adx%database_name --data-format CSV --table-name ScenarioMetadata --consumer-group adx --mapping ScenarioMetadataMapping
-        babylon azure adx connections create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} ScenarioRun %adx%database_name --data-format JSON --table-name SimulationTotalFacts --consumer-group adx --mapping SimulationTotalFactsMapping
-        babylon azure adx connections create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} ScenarioRunMetaData %adx%database_name  --data-format CSV --table-name ScenarioRunMetadata --consumer-group adx --mapping ScenarioRunMetadataMapping
+        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ProbesMeasures %adx%database_name --data-format JSON --table-name ProbesMeasures --compression GZip  --consumer-group adx --mapping ProbesMeasuresMapping
+        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioMetaData %adx%database_name --data-format CSV --table-name ScenarioMetadata --consumer-group adx --mapping ScenarioMetadataMapping
+        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioRun %adx%database_name --data-format JSON --table-name SimulationTotalFacts --consumer-group adx --mapping SimulationTotalFactsMapping
+        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioRunMetaData %adx%database_name  --data-format CSV --table-name ScenarioRunMetadata --consumer-group adx --mapping ScenarioRunMetadataMapping
       shell: bash

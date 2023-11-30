@@ -13,22 +13,6 @@ inputs:
     description: 'Workspace Powerbi Name scenario'
     required: true
     default: ''
-  type_dashboard_view:
-    description: 'dashboard_view'
-    required: true
-    default: ''
-  type_scenario_view:
-    description: 'scenario_view'
-    required: true
-    default: ''
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -38,7 +22,7 @@ runs:
         powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario
       run: |
         cd ${{ inputs.folder }}
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type ${{ inputs.type_dashboard_view }} --folder $powerbi_dashboard_view/ --override
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --type "${{ inputs.type_scenario_view }}" --folder $powerbi_scenario_view/ --override  
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type scenario_view --folder $powerbi_scenario_view/ --override  
       shell: bash
 

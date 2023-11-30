@@ -5,14 +5,6 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -21,5 +13,5 @@ runs:
         DATASET: ${{ github.action_path }}/../../../dataset
       run: |
         cd ${{ inputs.folder }}
-        babylon azure storage container upload -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --folder $DATASET
+        babylon azure storage container upload -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --folder $DATASET
       shell: bash

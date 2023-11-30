@@ -9,15 +9,15 @@ inputs:
     description: 'Github Repository source'
     required: true
     default: ''
+  branch_from:  
+    description: 'Sample Webapp version'
+    required: true
+    default: 'v5.0.0'
   repo_to:  
     description: 'Github Repository target'
     required: true
     default: ''
-  repo_tag:  
-    description: 'Sample Webapp version'
-    required: true
-    default: 'v5.0.0'
-  repo_to_branch:  
+  branch_to:  
     description: 'Github Repository target branch'
     required: true
     default: 'main'
@@ -27,10 +27,6 @@ inputs:
     default: ''
   email:  
     description: 'Email'
-    required: true
-    default: ''
-  pat:
-    description: 'Personal Access Token Github (repo/workflows)'
     required: true
     default: ''
 runs:
@@ -48,12 +44,12 @@ runs:
         git add README.md
         git commit -m "first commit"
         git branch -M main
-        git remote add origin https://Cosmo-Tech:${{inputs.pat}}@github.com/${{ inputs.repo_to }}.git
-        git remote add upstream https://oauth2:${{inputs.pat}}@github.com/${{ inputs.repo_from }}.git
+        git remote add origin https://Cosmo-Tech:${{ env.GITHUB_PAT }}@github.com/${{ inputs.repo_to }}.git
+        git remote add upstream https://oauth2:${{ env.GITHUB_PAT }}@github.com/${{ inputs.repo_from }}.git
         git remote set-url upstream --push "NO"
         git fetch --all --tags --prune
-        git checkout -B ${{ inputs.repo_to_branch }} ${{ inputs.repo_tag }}
+        git checkout -B ${{ inputs.branch_to }} ${{ inputs.branch_from }}
         rm -r .github/
         git add .; git commit -m 'first commit'
-        git push origin ${{ inputs.repo_to_branch }} -f
+        git push origin ${{ inputs.branch_to }} -f
       shell: bash

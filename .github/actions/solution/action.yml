@@ -9,19 +9,11 @@ inputs:
     description: "Solution Name"
     required: true
     default: ""
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Solution deployment
       run: |
         cd ${{ inputs.folder }}
-        babylon api solutions create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
+        babylon api solutions create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
       shell: bash

@@ -5,22 +5,14 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  context_id:
-    description: 'Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Create storage container by default
       run: |
         cd ${{ inputs.folder }}
-        organization_id=$(babylon config get -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} api organization_id)
-        babylon azure storage container create $organization_id -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %azure%team_id --principal-type Group --resource-name %azure%storage_account_name
-        babylon azure iam set -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
+        organization_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api organization_id)
+        babylon azure storage container create $organization_id -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %azure%team_id --principal-type Group --resource-name %azure%storage_account_name
+        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
       shell: bash

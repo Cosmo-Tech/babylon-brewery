@@ -17,14 +17,6 @@ inputs:
     description: 'Organization role security'
     required: true
     default: 'admin'
-  context_id:
-    description: 'Organization Context Name'
-    required: true
-    default: 'asset'
-  platform_id:
-    description: 'Organization Platform Name'
-    required: true
-    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -32,7 +24,7 @@ runs:
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api organizations payload create -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon api organizations create "${{ inputs.name }}" -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }}
-        babylon api organizations security add -c ${{ inputs.context_id }} -p ${{ inputs.platform_id }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+        babylon api organizations payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api organizations create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        babylon api organizations security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
       shell: bash
