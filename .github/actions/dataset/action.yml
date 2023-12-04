@@ -22,10 +22,10 @@ runs:
         type: ${{ inputs.type }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api datasets payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type
-        babylon api datasets create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --file /$config_path/dataset.storage.yaml --output .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml 
+  #      babylon api datasets payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type
+        babylon api datasets create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --output .payload/dataset.storage.yaml 
         dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api storage_id)
         sed -i 's/%DATASET%/$dataset_id/g' .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml
-        babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml --type $type $dataset_id
+        babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/dataset.storage.yaml --type $type $dataset_id
 
       shell: bash
