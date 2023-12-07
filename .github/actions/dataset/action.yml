@@ -26,5 +26,4 @@ runs:
         dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api dataset.storage_id)
         sed -i "s/%DATASET%/$dataset_id/g" .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml
         babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml --type $type $dataset_id
-
       shell: bash
