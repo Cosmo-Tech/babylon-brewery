@@ -61,6 +61,9 @@ inputs:
     description: 'item'
     required: true
     default: ''
+  api:
+    description: 'control set api version'
+    default: 'true'
 runs:
   using: "composite"
   steps:
@@ -81,6 +84,8 @@ runs:
         babylon config set github organization "${{ inputs.organization }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
         babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
         babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --item ${{ inputs.item }}
-        babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
+        if [ "${{ inputs.api }}" == "true" ]; then
+          babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
+        fi
       shell: bash
 
