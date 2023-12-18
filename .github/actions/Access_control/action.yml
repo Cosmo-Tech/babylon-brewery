@@ -1,0 +1,27 @@
+name: Access Control Action
+description: 'Set email chain Access Control for workspaces/organizations'
+
+inputs:
+  emails:
+    description: 'List of emails to set the chain'
+    required: true
+  mode:
+    description: 'Mode of operation (workspaces/organizations)'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Add Access Control
+      run: |
+        if [[ "${{ inputs.mode }}" == "workspaces" ]]; then
+          for email in ${{ inputs.emails }}; do
+            babylon api workspaces security add --email $email --role admin -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+          done
+        elif [[ "${{ inputs.mode }}" == "organizations" ]]; then
+          for email in ${{ inputs.emails }}; do
+            babylon api organizations security add --email $email --role admin -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        else
+          echo "Invalid mode specified. Please use 'workspaces' or 'organizations'."
+          exit 1
+        fi
+      shell: bash
