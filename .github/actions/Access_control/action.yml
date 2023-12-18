@@ -2,6 +2,10 @@ name: Access Control Action
 description: 'Set email chain Access Control for workspaces/organizations'
 
 inputs:
+  folder:
+    description: 'Working-dir folder'
+    required: true
+    default: 'personal'
   emails:
     description: 'List of emails to set the chain'
     required: true
@@ -13,6 +17,7 @@ runs:
   steps:
     - name: Add Access Control
       run: |
+        cd ${{ inputs.folder }}
         if [[ "${{ inputs.mode }}" == "workspaces" ]]; then
           for email in ${{ inputs.emails }}; do
             babylon api workspaces security add --email $email --role admin -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
