@@ -1,5 +1,0 @@
-id,Rank,PriorityScheme
-Level1,1,RiskBased
-Level2,2,ConsequenceBased
-Level3,3,OpportunityBased
-Level4,4,ProbabilityBased

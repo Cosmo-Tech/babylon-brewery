@@ -18,8 +18,8 @@ runs:
   steps:
     - name: PowerBI deployment
       env:
-        powerbi_dashboard_view: ${{ github.action_path }}/../../../powerbi/dashboard
-        powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario
+        powerbi_dashboard_view: ${{ github.action_path }}/../../../powerbi/dashboard/${{ env.PLATFORM_ID }}
+        powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario/${{ env.PLATFORM_ID }}
       run: |
         cd ${{ inputs.folder }}
         babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override

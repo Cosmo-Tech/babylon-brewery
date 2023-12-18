@@ -10,7 +10,7 @@ runs:
   steps:
     - name: Azure Data Explorer deployment
       env:
-        ADX: ${{ github.action_path }}/../../../adx
+        ADX: ${{ github.action_path }}/../../../adx/${{ env.PLATFORM_ID }}
       run: |
         cd ${{ inputs.folder }}
         babylon azure adx database create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}

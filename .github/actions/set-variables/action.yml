@@ -87,5 +87,6 @@ runs:
         if [ "${{ inputs.api }}" == "true" ]; then
           babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
         fi
+        babylon azure ad group member add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --gi %powerbi%group_id --pi %babylon%principal_id
       shell: bash
 
