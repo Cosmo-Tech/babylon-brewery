@@ -20,6 +20,7 @@ runs:
         elif [[ "${{ inputs.mode }}" == "organizations" ]]; then
           for email in ${{ inputs.emails }}; do
             babylon api organizations security add --email $email --role admin -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+          done
         else
           echo "Invalid mode specified. Please use 'workspaces' or 'organizations'."
           exit 1
