@@ -1,6 +1,5 @@
 name: Access Control Action
 description: 'Set email chain Access Control for workspaces/organizations'
-
 inputs:
   folder:
     description: 'Working-dir folder'
