@@ -1,10 +1,10 @@
-.execute database script <|
+//.execute database script <|
 //
 // Streaming ingestion
-.alter database ['o-xyxypwdjpw9w-WP03LignesAeriennes'] policy streamingingestion disable
+//.alter database ['o-xyxypwdjpw9w-WP03LignesAeriennes'] policy streamingingestion disable
 //
 // Batching ingestion
-.alter database ['o-xyxypwdjpw9w-WP03LignesAeriennes'] policy ingestionbatching '{"MaximumBatchingTimeSpan": "00:00:10"}'
+//.alter database ['o-xyxypwdjpw9w-WP03LignesAeriennes'] policy ingestionbatching '{"MaximumBatchingTimeSpan": "00:00:10"}'
 //
 // ProbesMeasures table
 .create table ProbesMeasures(
