@@ -24,7 +24,7 @@ runs:
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
         cd ${{ inputs.folder }}
-        babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+   #     babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
         babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
         babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
         babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
