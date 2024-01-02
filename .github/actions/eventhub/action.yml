@@ -15,7 +15,7 @@ runs:
     - name: Event Hub Namespaces, connections and permissions deployment
       run: |
         cd ${{ inputs.folder }}
-        babylon azure arm run ${{ inputs.name }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file %templates%/arm/eventhub_deploy.json 
+        babylon azure arm run -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file %templates%/arm/eventhub_deploy.json ${{ inputs.name }}
       shell: bash
     
     - name: add permissions
