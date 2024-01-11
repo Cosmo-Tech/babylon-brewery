@@ -22,7 +22,7 @@ runs:
         powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario/${{ env.PLATFORM_ID }}
       run: |
         cd ${{ inputs.folder }}
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type scenario_view --folder $powerbi_scenario_view/ --override  
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
+        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type scenario_view --folder $powerbi_scenario_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
       shell: bash
 
