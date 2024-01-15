@@ -17,6 +17,10 @@ inputs:
     description: 'connector name'
     required: true
     default: ''
+outputs:
+  connectorType:
+    description: 'The type of connector'
+    value: ${{ inputs.type }}
 runs:
   using: "composite"
   steps:
