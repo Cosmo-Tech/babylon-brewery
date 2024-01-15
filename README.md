@@ -1,682 +1,408 @@
 # Babylon Actions 
-(dev ref: babylon branch: ndon/deploy_test)
 
-This repository contains the instructions on how to deploy a Asset solution based on the Cosmo Tech Platform.
+This repository contains all the necessary actions and instructions on how to deploy an Asset solution based on the Cosmo Tech Platform using the latest version of Babylon.
 
 ## Prerequisite
 
-* ### Setup Github Repository
----
-</br>
-
-1. Create an app registration for babylon with required permissions
-2. Generate PAT Github (repo/workflows) and add it on github repository secrets
-2. Add below keys on github repository secrets
-
-    * ```AZURE_TENANT_ID```
-    * ```AZURE_CLIENT_ID```
-    * ```AZURE_CLIENT_SECRET```
-    * ```PAT```
-
-3. Set credentials ```AZ CLI``` on github repository secrets
-    >AZ_CREDENTIALS
-    ```json
-    {
-      "clientId": "<GUID>",
-      "clientSecret": "<STRING>",
-      "subscriptionId": "<GUID>",
-      "tenantId": "<GUID>"
-    }
-    ```
-
-</br>
-
-
-* ### Config folder
----
-
-</br>
-
-> Complete your configuration files with required keys.
-
-    configuration required:
-        platform:
-            api_url: 
-            api_scope: 
-            csm_platform_app_id: 
-            csm_object_platform_id: 
-            csm_platform_scope_id: 
-            azure_subscription: 
-            azure_tenant_id: 
-            babylon_client_id: 
-            babylon_principal_id: 
-            adx_cluster_name: 
-            adx_cluster_object_id: 
-            resource_group_name: 
-            csm_acr_registry_name: 
-            acr_registry_name: 
-            resources_location: 
-            storage_account_name: 
-            powerbi_api_scope: https://analysis.windows.net/powerbi/api/.default
-            azure_powerbi_group_id: 
-            azure_team_id: 
-        deploy:
-            - api_url
-            - api_scope
-            - csm_platform_app_id
-            - csm_object_app_id
-            - csm_platform_scope_id
-            - csm_acr_registry_name
-            - acr_registry_name
-            - azure_subscription
-            - azure_tenant_id
-            - babylon_client_id
-            - babylon_principal_id
-            - adx_cluster_name
-            - adx_cluster_object_id
-            - resource_group_name
-            - resources_location
-            - storage_account_name
-            - azure_powerbi_group_id
-        deploy:
-            - api_url
-            - resource_group_name
-            - resources_location
-            - csm_simulator_repository
-            - simulator_repository
-            - simulator_version
-            workspace_key: 
-            api_url: 
-            resource_group_name: 
-            resources_location: 
-            csm_simulator_repository: 
-            simulator_repository: 
-            simulator_version: 
-            deployment_name: 
-            webapp_location: 
-            webapp_organization_url: https://cosmotech.com
-            twincache_graphid: 
-            powerbi_api_scope: https://analysis.windows.net/powerbi/api/.default
-
-</br>
-
 ### Template workflow
 ---
+This is an example template illustrating how we can use these actions in our workflows for deploying our solution. You can find more details about these workflows in this repository : [https://github.com/Cosmo-Tech/asset-azure-deployment](https://github.com/Cosmo-Tech/asset-azure-deployment/blob/master/README.md)
 
 ```yaml
-name: Asset Solution Test
-
+name: Asset Solution Deploy
 
 env:
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  BABYLON_SERVICE: ${{ vars.BABYLON_SERVICE }}
+  BABYLON_TOKEN: ${{ secrets.BABYLON_TOKEN }}
+  BABYLON_ORG_NAME: ${{ vars.BABYLON_ORG_NAME }} 
+  BABYLON_ENCODING_KEY: ${{ secrets.BABYLON_ENCODING_KEY_PERF }}
+  GITHUB_PAT: ${{ secrets.PAT }}
 
 on:
+  workflow_dispatch:
+    inputs:
+      context_id:
+        description: 'Select CONTEXT_ID'
+        required: true
+        default: 'asset'
+        type: string
+        enum:
+          - 'asset'
+          - 'performance_mona-dev'
+      platform_id:
+        description: 'Select PLATFORM_ID'
+        required: true
+        default: 'dev'
+        type: string
+        enum:
+          - 'dev'
+          - 'perf'
+          - 'staging'
   push:
-    branches: 
-      - "babylon"
-
     branches:
-      - asset
-
-
+      - master
+  pull_request:
+    branches:
+      - master 
 jobs:
   asset-deploy:
     runs-on: ubuntu-latest
     env:
       dir: personal
       config_path: ./config
+      CONTEXT_ID: ${{ github.event.inputs.context_id || 'performance_mona-dev' }}
+      PLATFORM_ID: ${{ github.event.inputs.platform_id || 'perf' }}
     steps:
-      - uses: actions/checkout@v3
+      - name: 🎯 Checkout Code
+        uses: actions/checkout@v3
 
-      - name: install babylon
-
-        uses: Cosmo-Tech/babylon-actions/.github/actions/babylon@main
-
+      - name: 🛠 Install Babylon
         uses: Cosmo-Tech/babylon-actions/.github/actions/babylon@asset
 
+      - name: ⚙️ Setup Basic Configuration
+        uses: Cosmo-Tech/babylon-actions/.github/actions/set-variables@asset
         with: 
-          branch: ndon/deploy_test
-    
-      - id: deploy
-        name: retrieve deploy keys from local folder
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -o=json $config_path/deploy.yaml
-      - id: platform
-        name: retrieve platform keys from local folder
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -o=json $config_path/platform.yaml
-    
-      - name: setup babylon config
-
-        uses: Cosmo-Tech/babylon-actions/.github/actions/config@main
-
-        uses: Cosmo-Tech/babylon-actions/.github/actions/config@asset
-        with:
-          deploy: ${{ steps.deploy.outputs.result }}
-          platform: ${{ steps.platform.outputs.result }}
-
-      - name: create a new organization
-
-        uses: Cosmo-Tech/babylon-actions/.github/actions/organization@main
-        with:
-          name: "Cosmo Tech Example"
           email: example@cosmotech.com
-          role: admin
-        
-      - name: deploy adx database and permissions
-        uses: Cosmo-Tech/babylon-actions/.github/actions/adx@main
-
-      - name: deploy adt instance and permissions
-        continue-on-error: true
-        uses: Cosmo-Tech/babylon-actions/.github/actions/adt@main
-
-      - name: deploy eventhub namespaces and permissions
-        uses: Cosmo-Tech/babylon-actions/.github/actions/eventhub@main
-
-      - name: set pat in babylon for deploy
-        uses: Cosmo-Tech/babylon-actions/.github/actions/pat@main
-
+          user_principal_id: 
+          workspace_key: 
+          team_id: 
+          simulator_image_docker: 
+          simulator_version: 
+          uri_artifact_zip: 
+          deployment_name: 
+          location: 
+          repo_to: 
+          branch_to: 
+          organization: Cosmo-Tech
+          api_url: https://perf.api.cosmotech.com/v2 
+          api : ""
+          item: ""
+          
+      - name: 🏢 Create a New Organization
         uses: Cosmo-Tech/babylon-actions/.github/actions/organization@asset
         with:
-          name: "Asset Org Cosmo Tech"
-          email: <EMAIL>
+          name: "RTE"
+          email: example@cosmotech.com
           role: admin
 
-      - name: create container storage by default
+      - name: 📦 Create Container Storage by Default
         uses: Cosmo-Tech/babylon-actions/.github/actions/storage@asset
-        
-      - name: get azure team id
-        id: azureteam
-        run: |
-          cd $dir
-          azure_team_id=$(babylon config get-variable platform 'azure_team_id')
-          echo "azure_team_id=$azure_team_id" >> $GITHUB_OUTPUT
 
-      - name: deploy adx database and permissions
+      - name: 🚀 Deploy ADX Database and Permissions
         uses: Cosmo-Tech/babylon-actions/.github/actions/adx@asset
-        with:
-          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
 
-      - name: deploy adt instance and permissions
-        continue-on-error: true
-        uses: Cosmo-Tech/babylon-actions/.github/actions/adt@asset
-        with:
-          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
-
-      - name: deploy eventhub namespaces and permissions
+      - name: 🚀 Deploy Eventhub Namespaces and Permissions
         uses: Cosmo-Tech/babylon-actions/.github/actions/eventhub@asset
         with:
-          team_id: ${{ steps.azureteam.outputs.azure_team_id }}
+          name: "Asset_Eventhub_Deploy"
 
-      - name: set pat in babylon for deploy
-        uses: Cosmo-Tech/babylon-actions/.github/actions/pat@asset
+      - name: 🔐 Azure Login
+        uses: Azure/login@v1
         with:
-          pat: ${{ secrets.PAT }}
-      
-      - name: retrieve sample webapp
-        continue-on-error: true
-        uses: Cosmo-Tech/babylon-actions/.github/actions/retrieve@main
+          creds: '{"clientId":"${{ vars.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ vars.SUBSCRIPTION_ID }}","tenantId":"${{ vars.TENANT_ID }}"}'
+            
+      - name: 🔐 Authentication Eventhub Configuration
+        uses: Cosmo-Tech/babylon-actions/.github/actions/eventkey@asset
         with:
-          repo_from: Cosmo-Tech/azure-sample-webapp
-          repo_tag: v5.1.0-brewery
-          repo_to: <OWNER>/<REPO_NAME>
-          repo_to_branch: <BRANCH_DEST>
-          username: <USERNAME>
-          email: example@cosmotech.com
+          resource_group: phoenixperf
+
+      - name : 🔍 Generate Workspace Name
+        id : GWN
+        run : |
+            WNDASH=$(date "+%Y-%m-%d_%H:%M:%S")_$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 3)
+            echo "WNDASH=$WNDASH" >> $GITHUB_OUTPUT
+            WNSENA=$(date "+%Y-%m-%d_%H:%M:%S")_$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 3)
+            echo "WNSENA=$WNSENA" >> $GITHUB_OUTPUT
+
+      - name : 📊 Deploy Workspace PowerBI 
+        uses : Cosmo-Tech/babylon-actions/.github/actions/powerbi@asset
+        with:
+          workspace_name_dashboard: rte-pilote-delivery-perf_${{ steps.GWN.outputs.WNDASH }}
+          workspace_name_scenario: rte-pilote-delivery-perf_${{ steps.GWN.outputs.WNSENA }}
+
+      - name: 📥 Retrieve Sample WebApp
         uses: Cosmo-Tech/babylon-actions/.github/actions/retrieve@asset
         with:
-          repo_from: Cosmo-Tech/azure-asset-dev-webapp
-          repo_tag: <ORIGIN>/<BRANCH>
-          repo_to: <OWNER>/<REPO_NAME>
-          repo_to_branch: <BRANCH>
-          username: <USERNAME>
-          email: <EMAIL>
-          pat: ${{ secrets.PAT }}
-
-      - name: Retrieve babylon variables
-        id: baby_vars
+          repo_from: Cosmo-Tech/webapp-asset-demo
+          branch_from: upstream/deployment/delivery-rte-performance
+          repo_to: Cosmo-Tech/azure-webapp-asset-qa
+          branch_to: dev/asset 
+          username: user
+          email: example@cosmotech.com
+      
+      - name: 🔄 Increment Deployment Name Field
+        id: idnf
         run: |
-          cd $dir
-          rg=$(babylon config get-variable deploy 'resource_group_name')
-          org=$(babylon config get-variable deploy 'organization_id')
-          wk=$(babylon config get-variable deploy 'workspace_key')
-          echo "rg=$rg" >> $GITHUB_OUTPUT
-          echo "org=$org" >> $GITHUB_OUTPUT
-          echo "wk=$wk" >> $GITHUB_OUTPUT
-          echo "adxdatabasename=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
-          echo "azfname=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
-          echo "namespace=$(echo $org-$wk | tr [:upper:] [:lower:])" >> $GITHUB_OUTPUT
-          echo "adt=$(babylon config get-variable deploy 'digital_twin_url')" >> $GITHUB_OUTPUT
-          echo "adx=$(babylon config get-variable deploy 'adx_database_name')" >> $GITHUB_OUTPUT
-          echo "cadt=$(babylon config get-variable deploy 'adt_connector_id')" >> $GITHUB_OUTPUT
-          echo "sadt=$(babylon config get-variable deploy 'storage_connector_id')" >> $GITHUB_OUTPUT
-          echo "hostname=$(babylon config get-variable deploy 'webapp_static_domain')" >> $GITHUB_OUTPUT
-          echo "dadt=$(babylon config get-variable deploy 'adt_dataset_id')" >> $GITHUB_OUTPUT
-          echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
+            cd ${{ env.dir }}
+            deployment_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} webapp deployment_name)
+            random_string=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 3)
+            new_deployment_name=${deployment_name}_${random_string}
+            babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} webapp deployment_name $new_deployment_name
 
-      - name: deploy workspace powerbi
-        uses: Cosmo-Tech/babylon-actions/.github/actions/powerbi@main
-        with:
-          workspace_name: "Example Workspace Test"
-          database_name: ${{ steps.baby_vars.outputs.adxdatabasename }}
-          cluster_url: <ADX_CLUSTER_NAME>
-          
-      - name: deploy webapp
-        continue-on-error: true
-        uses: Cosmo-Tech/babylon-actions/.github/actions/webapp@main
-        with:
-          powerbi: true
-      - name: deploy webapp
-        continue-on-error: true
+      - name: 🚀 Deploy WebApp
         uses: Cosmo-Tech/babylon-actions/.github/actions/webapp@asset
-        with:
-          powerbi: false
-          azf: true
+            
+      # - name: 📥 Retrieve Azure Function Key
+      #   uses: Cosmo-Tech/babylon-actions/.github/actions/azurefunctionkey@asset
+      #   with:
+      #     resource_group: phoenixperf
 
-      - name: az login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZ_CREDENTIALS }}
-
-      - name: retrieve azf key
-        id: azf
-        env:
-          rg: ${{ steps.baby_vars.outputs.rg }}
-          azfname: ${{ steps.baby_vars.outputs.azfname }}        
-        run: |
-          azf_key=$(az functionapp keys list -g $rg -n $azfname --query masterKey)
-          echo "azf_key=$azf_key" >> $GITHUB_OUTPUT
-
-      - name: set azf key
-        run: |
-          cd $dir
-          babylon config set-variable secrets azf.key ${{ steps.azf.outputs.azf_key }}
-
-      - name: retrieve hub keys
-        id: hub
-        env:
-          rg: ${{ steps.baby_vars.outputs.rg }}
-          namespace: ${{ steps.baby_vars.outputs.namespace }}
-          keyname: RootManageSharedAccessKey
-        run: |
-          hub_key=$(az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name $keyname --query primaryKey)
-          echo "hub_key=$hub_key" >> $GITHUB_OUTPUT 
-
-      - name: set event hub key
-        run: |
-          cd $dir
-          babylon config set-variable secrets eventhub.key ${{ steps.hub.outputs.hub_key }}
-
-      - name: create adt connector
-        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
-
-      - name: create twin connector
-        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
-        with:
-          type: twin
-          name: "Asset Baby Connector Twin"
-
-      - name: create adt connector
-        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
-        with:
-          type: adt
-          name: "Asset Baby Connector ADT"
-
-      - name: create connector storage
-        uses: Cosmo-Tech/babylon-actions/.github/actions/connector@main
-
+      - name: 📦 Create Connector Storage
         uses: Cosmo-Tech/babylon-actions/.github/actions/connector@asset
         with:
           type: storage
-          name: "Asset Baby connector STORAGE"
+          version: 1.1.2
+          name: "Asset_Connector_AZURE_STORAGE"
 
-      - name: create dataset adt
-        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@main
-        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@asset
-        with:
-          type: adt
-          name: "Asset Baby dataset ADT"
-
-      - name: create dataset twin
-        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@asset
-        with:
-          type: twin
-          name: "Asset Baby dataset Twin"
-
-      - name: Retrieve babylon variables
-        id: baby_wpi
+      - name : 📄 Copy The Templates to The Babylon Env
         run: |
-          cd $dir
-          echo "wpi=$(babylon config get-variable deploy 'webapp_principal_id')" >> $GITHUB_OUTPUT
+            if [ "${{ env.PLATFORM_ID }}" == "dev" ]; then
+              cp $config_path/dev/dataset.storage.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.dev.dataset.storage.yaml
+              cp $config_path/dev/solution.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.dev.solution.yaml
+            elif [ "${{ env.PLATFORM_ID }}" == "perf" ]; then
+              cp $config_path/perf/dataset.storage.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.perf.dataset.storage.yaml
+              cp $config_path/perf/solution.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.perf.solution.yaml
+            elif [ "${{ env.PLATFORM_ID }}" == "staging" ]; then
+              cp $config_path/staging/dataset.storage.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.staging.dataset.storage.yaml
+              cp $config_path/staging/solution.yaml ${{ env.dir }}/.payload/${{ env.CONTEXT_ID }}.staging.solution.yaml
+            else
+              echo "Unsupported PLATFORM_ID: ${{ env.PLATFORM_ID }}"
+              exit 1 
+            fi
 
-      - name: add adt permission to webapp
-        uses: Cosmo-Tech/babylon-actions/.github/actions/permission@main
+      - name: 📦 Create Dataset Storage
+        uses: Cosmo-Tech/babylon-actions/.github/actions/dataset@asset
         with:
-          pi: ${{ steps.baby_wpi.outputs.wpi }}
-          pt: ServicePrincipal
-          ri: Microsoft.DigitalTwins/digitalTwinsInstances
-          rt: ServicePrincipal
-
-      - name: create solution brewery
-        uses: Cosmo-Tech/babylon-actions/.github/actions/solution@main
-        with:
-          name: Brewery Baby Solution 
-
-      - name: create workspace brewery
-        uses: Cosmo-Tech/babylon-actions/.github/actions/workspace@main
-        with:
-          name: Brewery Baby Workspace
-          email: example@cosmotech.com
-        uses: Cosmo-Tech/babylon-actions/.github/actions/permission@asset
-        with:
-          pi: ${{ steps.baby_wpi.outputs.wpi }}
-          ri: Microsoft.DigitalTwins/digitalTwinsInstances
-
-      - name: create solution Asset
+          type: storage
+          name: "Asset_Baby_dataset_STORAGE" 
+            
+      - name: 📦 Create Solution Asset
         uses: Cosmo-Tech/babylon-actions/.github/actions/solution@asset
         with:
-          name: "Asset Solution Test"
+          name: WP03-Overhead_lines_b
 
-      - name: create workspace Asset
+      - name: 🏢 Create Workspace Asset
         uses: Cosmo-Tech/babylon-actions/.github/actions/workspace@asset
         with:
-          name: Asset Baby Workspace
-          email: <EMAIL>
+          name: WP03-Overhead_lines_b
+          email: example@cosmotech.com
+          role: admin
 
-      - name: set key api
-        run: |
-          cd $dir
-          babylon api workspace setkey
+      - name: 📤 Upload CSV File Asset
+        uses: Cosmo-Tech/babylon-actions/.github/actions/upload_dataset@asset
+      
+      - name: 📤 Upload Handlers Zip
+        uses: Cosmo-Tech/babylon-actions/.github/actions/upload_handlers@asset
+        with: 
+          item: WP03_RunTemplate
 
 ```
-
-
+Actions
+---
 > References
 
-* ### install babylon
+- [https://cosmo-tech.github.io/Babylon-End-User-Doc/3.1.0/guides/](https://cosmo-tech.github.io/Babylon-End-User-Doc/3.1.0/guides/)
 
-    ```bash
-    git clone -b <branch> https://github.com/Cosmo-Tech/Babylon.git; cd Babylon
+- [https://github.com/Cosmo-Tech/asset-azure-deployment](https://github.com/Cosmo-Tech/asset-azure-deployment/blob/master/README.md)
+
+### Install Babylon
+---
+This action will install `Babylon` with all requirements, and the init command will create all configuration files. For more details, check this link: [https://cosmo-tech.github.io/Babylon-End-User-Doc/3.1.0/guides/](https://cosmo-tech.github.io/Babylon-End-User-Doc/3.1.0/guides/getting_started/)
+```bash
+git clone https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
+pip install -e . --quiet
+```
+### init commands (configuration)
     
-    pip install -e .
-    mkdir personal; cd personal
-    ```
+```bash
+mkdir personal
+cd personal
+babylon config init -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
 
-* ### set up working_dir
+### Set up the configuration (set-varaibles action)
+---
 
-    ```bash
-    echo 'export BABYLON_WORKING_DIRECTORY=.' >> ~/.bashrc
-    echo 'export BABYLON_CONFIG_DIRECTORY=./config' >> ~/.bashrc
-    source ~/.bashrc
-    ```
+This action sets up all the necessary variables for deploying our solution, such as:
+  -  `email`
+  -  `user_principal_id`
+  -  `workspace_key`
+  -  `team_id`
+  -  `simulator_repository`
+  -  `simulator_version`
+  -  `function_artifact_url` 
+  -  `deployment_name` 
+  -  `location` 
+  -  `organization` 
+  -  `repository` 
+  -  `run_templates` 
+  -  `api url` 
 
-* ### init commands (configuration)
+>run
+
+```bash
+babylon config set azure email "${{ inputs.email }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set azure user_principal_id "${{ inputs.user_principal_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set api workspace_key "${{ inputs.workspace_key }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set powerbi dashboard_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set powerbi scenario_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set azure team_id "${{ inputs.team_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set acr simulator_repository "${{ inputs.simulator_image_docker }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set acr simulator_version "${{ inputs.simulator_version }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set azure function_artifact_url "${{ inputs.uri_artifact_zip }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set webapp deployment_name "${{ inputs.deployment_name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set webapp location "${{ inputs.location }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set github branch "${{ inputs.branch_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set github organization "${{ inputs.organization }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --item ${{ inputs.item }}
+
+babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
+```
+
+## Create an Organization (organization action)
+
+This action will create an organization with a default name, such as `o-mmv8evy0x69`.
+
+>run
+
+```bash
+babylon api organizations payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon api organizations create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon api organizations security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+```
+
+## Create a Blob Storage (storage action)
+
+This action will create a Blob storage container with the same name as the organization to store the dataset.
+
+>run
+
+```bash
+organization_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api organization_id)
+
+babylon azure storage container create $organization_id -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %azure%team_id --principal-type Group --resource-name %azure%storage_account_name
+
+babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
+```
+
+### Azure Data Explorer database (adx action) 
+---
+
+The `ADX action` creates an adx databese it depends on the `file.kql` that is located in the `adx` directory. The adx directory contains three subdirectories, this is how it is structured:
+
+```bash
+.
+├── adx
+│   ├── dev
+│   │   └── Create.kql
+│   ├── perf
+│   │   └── 00-Initialisation_ASSET.kql
+│   └── staging
+```
+
+>run
+
+```bash
+- name: Azure Data Explorer deployment
+  env:
+    ADX: ${{ github.action_path }}/../../../adx/${{ env.PLATFORM_ID }}
+    run: |
+       babylon azure adx database create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+       babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type User --role Admin %azure%user_principal_id  
+       
+       babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type Group --role Admin %azure%team_id
+       
+       babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type App --role Admin %platform%principal_id
+      
+       babylon azure adx script run-folder $ADX -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
+
+## Create a EventHub (eventhub action)
+
+This action will create an Event Hub with all necessary permissions, consumer groups, and data connections : `ProbesMeasures`, `ScenarioMetadata`, `SimulationTotalFacts`, and `ScenarioRunMetadata`.
+
+## Authentication Eventhub configuration (eventkey action)
+
+This action will retrieve an Event Hub shared access key and save this secret in the vault.
+
+>run
+
+```bash
+eventkey=$(az eventhubs namespace authorization-rule keys list -g ${{ inputs.resource_group }} --namespace-name $database_name --name RootManageSharedAccessKey --query primaryKey)
+
+babylon hvac set project eventhub $eventkey -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
+
+## PowerBI Deploy Workspace (powerbi action)
+
+This action will deploy a Power BI workspace. It depends on the Power BI report and scenarios located in the `powerbi` directory. The powerbi directory contains two subdirectories, `dashboard` and `scenario`. This is how it is structured:
+
+```bash
+├── powerbi
+│   ├── dashboard
+│   │   ├── dev
+│   │   │   └── asset_dev_dashboard.pbix
+│   │   ├── perf
+│   │   │   ├── RTEAzure-PowerBiDatasetView.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationBudgetAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationEquipmentAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationOPEXCAPEXAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationScenarioComparison.pbix
+│   │   │   └── RTEAzure-PowerBiSimulationScenariosOverview.pbix
+│   │   └── staging
+│   └── scenario
+│       ├── dev
+│       │   └── Asset_Staging_Demo_Dashboard_Baseline.pbix
+│       ├── perf
+│       │   └── RTEAzure-PowerBiScenarioView.pbix
+│       └── staging
+```
+
+>run
+
+```bash
+- name: PowerBI deployment
+  env:
+    powerbi_dashboard_view: ${{ github.action_path }}/../../../powerbi/dashboard/${{ env.PLATFORM_ID }}
     
-    ```bash
-    cd personal
-    babylon config init
-    babylon working-dir complete
-    ```
-
-</br>
-
-Solution deployment
----
-
-</br>
-
-### Container image
-- publish the solution container image to your platform azure container registry.
-
->configuration
-
-    platform file:
-        csm_acr_registry_name: <SOURCE>
-        acr_registry_name: <DESTINATION>
-    deploy file:
-        csm_simulator_repository: <SOURCE>
-        simulator_repository: <DESTINATION>
-        simulator_version: <x.y.z>
-
->run
-
-```bash
-babylon azure acr pull -r <SOURCE>.azurecr.io
-babylon azure acr push -r <DESTINATION>.azurecr.io
-```
-
-</br>
-
-## solution object
----
-
->configuration
-
-    deploy file:
-        organization_id: <ORGANIZATION_ID>
-        api_url: <API_URL>
-        simulator_repository: <SIMULATOR>
-        simulator_version: <VERSION>
-
-    platform file:
-        api_url: <API_URL>
-        api_scope: <API_SCOPE>
-        azure_subscription: <SUBSCRIPTION_ID>
-        azure_tenant_id: <TENANT_ID>
-
-    API: .payload_templates/api
-
->run
-
-```bash
-babylon api solution create 'Solution Baby Dev Solution' -i API/Solution.yaml --select
-```
-
-</br>
-
-## Workspace object
----
-
->configuration (example)
-
-    deploy file:
-        solution_id: <SOLUTION_ID>
-        workspace_key: <WORKSPACE_KEY>
+    powerbi_scenario_view: ${{ github.action_path }}/../../../powerbi/scenario/${{ env.PLATFORM_ID }}
+  run: |
+    cd ${{ inputs.folder }}
     
-    API: .payload_templates/api
-
->run
-
-```bash
-babylon api workspace create 'The Baby Solution Dev Workspace' -i API/workspace.yaml --select
+    babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
+    
+    babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type scenario_view --folder $powerbi_scenario_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
 ```
 
-</br>
+## Retrieve a Simple Web App (retrieve action)
 
+This action will retrieve a simple web app. This process requires a GitHub repository with the destination branch already created. Follow these steps:
+- create a new repository in Github
+- configure your branch <BRANCH> with code source 
 
-## Azure digital twins 
----
-
->configuration
-
-    deploy_file:
-        organization_id: <ORGANIZATION_ID>
-        workspace_key: <WORKSPACE_KEY>
-
-    platform file:
-        resource_group_name: <RESOURCE_GROUP_NAME>
-        resources_location: <RESOURCES_LOCATION>
-
->run
+> run
 
 ```bash
-babylon azure adt instance create -s
-
-<!-- permissions adt-->
-<!-- Azure Digital Twins Data Owner: bcd981a7-7f74-457b-83e1-cceb9e632ffe -->
-<!-- Azure Digital Twins Data Reader: d57506d4-4c8d-48b1-8587-93c323f6a5a3 -->
-<!-- ObjectId / PrincipalId Platform: 87267e78-0cff-4bd7-a4c5-8a68727f8cb7 -->
-<!-- if -pi -> default csm_object_platform_id -->
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
-
-babylon azure adt model upload dtdl/
-
-<!-- Principal Id WebApp -->
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe --select-webapp
-```
-
-</br>
-
-
-## Connector azure digital twins
----
-
->configuration
-
-    API: .payload_templates/api
-
->run
-
-```bash
-babylon api connector create 'ADT Connector Babylon' -i API/connector.adt.yaml -t adt -s
-```
-
-</br>
-
-
-## Connector azure storage
----
-
->configuration
-
-    API: .payload_templates/api
-
->run
-
-```bash
-babylon api connector create 'Storage Connector Babylon' -i API/connector.storage.yaml -t storage -s
-```
-
-</br>
-
-
-## Dataset azure digital twins
----
-
->configuration
-
-    API: .payload_templates/api
-
->run
-
-```bash
-babylon api dataset create 'ADT Dataset Babylon' -i API/dataset.adt.yaml -t adt -s
-```
-
-</br>
-
-
-## Azure data explorer cluster
----
-
->configuration
-
-    deploy_file:
-        organization_id: <ORGANIZATION_ID>
-        workspace_key: <WORKSPACE_KEY>
-
-    platform file:
-        adx_cluster_name: <ADX_CLUSTER_NAME>
-        adx_cluster_object_id: <PRINCIPAL_ID>
-
->run
-
-```bash
-babylon azure adx database create -s
-babylon azure adx script run-folder adx
-<!-- permission cosmo platform ADX database : default csm_object_platform_id-->
-babylon azure adx permission set -t App -r Admin
-
-<!-- set key eventhub on workspace -->
-rg=$(babylon config get-variable deploy "resource_group_name")
-org=$(babylon config get-variable deploy "organization_id")
-wk=$(babylon config get-variable deploy "workspace_key")
-namespace=$(echo $org-$wk | tr [:upper:] [:lower:])
-babylon config set-variable secrets eventhub.key $(az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name <ROOT_KEY> --query primaryKey | jq -r '')
-babylon api workspace setkey
-```
-
-</br>
-
-## Azure Event Hub namespaces
----
-
->configuration
-
-    API: .payload_templates/arm
-
->run
-
-```bash
-babylon azure arm runtmp -f API/eventhub_deploy.json
-<!-- Event Hub Namespaces permissions-->
-<!-- Azure Event Hubs Data Receiver: a638d3c7-ab3a-418d-83e6-5f17a39d4fde -->
-<!-- Azure Event Hubs Data Sender  : 2b629674-e913-4c01-ae53-ef4638d8f975 -->
-<!-- Principal Id ADX Cluster -->
-babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi <ADX_CLUSTER_PRINCIPAL_ID> -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
-babylon azure permission set -rt Microsoft.EventHub/Namespaces -ri 2b629674-e913-4c01-ae53-ef4638d8f975
-
-babylon azure adx connections create "ProbesMeasures" JSON -tn "ProbesMeasures" 
-babylon azure adx connections create "ScenarioMetaData" CSV -tn "ScenarioMetadata" 
-babylon azure adx connections create "ScenarioRun" JSON -tn "SimulationTotalFacts" 
-babylon azure adx connections create "ScenarioRunMetaData" CSV -tn "ScenarioRunMetadata"
-```
-
-## Power bi
----
-
->configuration
-
-    platform file:
-        azure_powerbi_group_id: <AZURE_GROUP_ID>
-
->run
-
-```bash
-babylon powerbi deploy-workspace <WORKSPACE_NAME> -f <POWERBI_REPORT_PATH> -p ADX_DATABASE <DATABASE_NAME> -p ADX_CLUSTER <CLUSTER_NAME>
-```
-
-</br>
-
-## Web app
----
-Link: https://cosmo-tech.github.io/Babylon-End-User-Doc/2.0.0/commands/webapp_deploy/
-
-
->configuration
-
-    deploy file:
-        deployment_name: <DEPLOYMENT_NAME>
-        webapp_location: <RESOURCE_LOCATION>
-        webapp_repository: <GITHUB_REPOSITORY_URL>
-        webapp_repository_branch: <BRANCH>
-
-    platform file:
-        azure_powerbi_group_id: <AZURE_GROUP_ID>
-
-
-> manual operation
-
-    - create PAT with repo and workflow scopes
-    help : https://cosmo-tech.github.io/Babylon-End-User-Doc/2.1.0/commands/webapp_deploy/
-   
-```bash
-<!-- on webapp_repository_branch -->
 git config --global pull.rebase true
 git config --global init.defaultBranch main
 git config --global user.name <USERNAME>
@@ -696,29 +422,183 @@ rm -r .github/
 git add .; git commit -m 'first commit'
 git push origin <BRANCH_REPO_DESTINATION> -f
 ```
-   
+
+## Web App Deploy (webapp action)
+
+This action will use the macro command to create a static web app and configure it with the source code for the web app.
+
+This includes:
+- Creating and configuring an Azure Static WebApp resource
+- Creating and configuring an Azure Active Directory App Registration
+- Configuring the WebApp source code
+- Adding access to the PowerBI Workspace
+
 >run
 
 ```bash
-babylon config set-variable secrets github.token <GITHUB_TOKEN>
-babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTION_DEPLOY_PATH>
+babylon webapp deploy -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} 
+  
+babylon powerbi workspace user add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} %app%principal_id App Admin
+
+babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id%azure%eventhub_built_data_sender --principal-id %app%principal_id 
+```
+`Note` : In this case, we deploy our web app without Azure Functions, and if you need Azure Functions, you should add this option to the command :
+>run
+```bash
+babylon webapp deploy -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --with-azf
 ```
 
-</br>
+## Create a Connector (connector action)
+
+This action will create a connector depending on the specified type, such as `storage`, `adt`, or `twin` connector and version.
+
+>run
+
+```bash
+babylon api connectors payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type
+
+babylon api connectors create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --version $version 
+```
+
+## Create a Dataset (dataset action)
+
+This action will create a dataset depending on the specified type, such as `storage`, `adt`, or `twin` dataset. It will also update the payload file by adding the correct path to all CSV files using the `sed` command.
+
+>run
+
+```bash
+babylon api datasets create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --output .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml 
+
+dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api dataset.storage_id)
+
+sed -i "s/%DATASET%/$dataset_id/g" .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml
+
+babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml --type $type $dataset_id
+```
+
+## Create a Solution (solution action)
+
+This action will create a solution.
+
+```bash
+babylon api solutions create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
+
+## Create a Workspace (workspace action)
+
+This action will create a workspace, add the specified user as an admin in this workspace, and register the Event Hub key in the workspace.
+
+```bash
+babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+
+babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+
+babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
+
+### Upload all CSV files (upload_dataset action)
+---
+
+The `upload_dataset` action uploads all CSV files to a blob container. It depends on all CSV files that are zipped in the `dataset` directory. The dataset directory contains three subdirectories. This is how it is structured:
+
+```bash
+├── dataset
+│   ├── dev
+│   │   └── AZURE_REF_DATASETS.zip
+│   ├── perf
+│   │   └── AZURE_REF_DATASETS.zip
+│   └── staging
+```
+
+>run
+
+```bash
+- name: Upload dataset
+  env:
+    DATASET: ${{ github.action_path }}/../../../dataset/${{ env.PLATFORM_ID }}
+  run: |
+    cd ${{ inputs.folder }}
+    unzip $DATASET/AZURE_REF_DATASETS.zip
+    
+    babylon azure storage container upload -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --folder ./AZURE_REF_DATASETS
+```
+
+### Upload handlers (upload_handlers action)
+---
+
+3 handlers are executed in `cloud` mode, meaning outside the Docker image of the simulator: `parameter handler`, `prerun`, and `postrun`. They need to be deployed on the platform. The `upload_handlers` depends on parameter handler, prerun, and postrun, that are zipped in the `handlers` directory. The handlers directory contains three subdirectories. This is how it is structured:
+
+```bash
+├── handlers
+│   ├── dev
+│   ├── perf
+│   │   ├── parameters_handler.zip
+│   │   ├── postrun.zip
+│   │   └── prerun.zip
+│   └── staging
+```
+
+>run
+
+```bash
+- name: Upload handlers
+  env:
+    HANDLERS: ${{ github.action_path }}/../../../handlers/${{ env.PLATFORM_ID }}
+  run: |
+    cd ${{ inputs.folder }}
+    babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} parameters_handler $HANDLERS/parameters_handler.zip
+    
+    babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} prerun $HANDLERS/prerun.zip
+    
+    babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} postrun $HANDLERS/postrun.zip
+```
+
+### Retrieve azure function key (eventkey action)
+---
+
+This action is used to retrieve the Azure Function key. 
+`Note`: that it can only be used if we deploy our web app with Azure Functions. In this case, when the function key is required, we can use this action to retrieve it and save it in the vault.
+
+>run
+
+```bash
+database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} adx database_name) 
+
+eventkey=$(az eventhubs namespace authorization-rule keys list -g ${{ inputs.resource_group }} --namespace-name $database_name --name RootManageSharedAccessKey --query primaryKey)
+
+babylon hvac set project eventhub $eventkey -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+```
+
+### Project Tree
+---
+This is how the project is structured, presenting all the actions and directories to provide an overview.
 
 ```bash
 .
+├── adx
+│   ├── dev
+│   │   └── Create.kql
+│   ├── perf
+│   │   └── 00-Initialisation_ASSET.kql
+│   └── staging
+├── dataset
+│   ├── dev
+│   │   └── AZURE_REF_DATASETS.zip
+│   ├── perf
+│   │   └── AZURE_REF_DATASETS.zip
+│   └── staging
 ├── .github
 │   └── actions
-│       ├── adt
+│       ├── Access_control
 │       │   └── action.yml
 │       ├── adx
 │       │   └── action.yml
+│       ├── azurefunctionkey
+│       │   └── action.yml
 │       ├── babylon
 │       │   └── action.yml
-│       ├── config
-│       │   ├── action.yml
-│       │   └── set_babylon_config.py
 │       ├── connector
 │       │   └── action.yml
 │       ├── dataset
@@ -728,53 +608,54 @@ babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTIO
 │       │   └── dispatch.py
 │       ├── eventhub
 │       │   └── action.yml
+│       ├── eventkey
+│       │   └── action.yml
 │       ├── organization
-│       │   └── action.yml
-│       ├── pat
-│       │   └── action.yml
-│       ├── permission
 │       │   └── action.yml
 │       ├── powerbi
 │       │   └── action.yml
 │       ├── retrieve
 │       │   └── action.yml
+│       ├── set-variables
+│       │   └── action.yml
 │       ├── solution
 │       │   └── action.yml
 │       ├── storage
+│       │   └── action.yml
+│       ├── upload_dataset
+│       │   └── action.yml
+│       ├── upload_handlers
 │       │   └── action.yml
 │       ├── webapp
 │       │   └── action.yml
 │       └── workspace
 │           └── action.yml
-├── .gitignore
-├── .payload_templates
-│   ├── api
-│   │   ├── connector.adt.yaml
-│   │   ├── connector.storage.yaml
-│   │   ├── connector.twin.yaml
-│   │   ├── dataset.adt.yaml
-│   │   ├── dataset.storage.yaml
-│   │   ├── dataset.twin.yaml
-│   │   ├── organization.yaml
-│   │   ├── send_key.yaml
-│   │   ├── solution.yaml
-│   │   └── workspace.yaml
-│   ├── arm
-│   │   ├── azf_deploy.json
-│   │   └── eventhub_deploy.json
-│   ├── tfc
-│   │   ├── workspace_create.json
-│   │   └── workspace_run.json
-│   └── webapp
-│       ├── app_insight.json
-│       ├── app_registration.json
-│       ├── webapp_config.json
-│       ├── webapp_details.json
-│       └── webapp_settings.json
+├── handlers
+│   ├── dev
+│   ├── perf
+│   │   ├── parameters_handler.zip
+│   │   ├── postrun.zip
+│   │   └── prerun.zip
+│   └── staging
 ├── powerbi
-│   └── brewery_report.pbix
-├── README.md
-└── terraform_cloud
-    ├── tfc_variables_create.yaml
-    └── tfc_workspace_create.yaml
+│   ├── dashboard
+│   │   ├── dev
+│   │   │   └── asset_dev_dashboard.pbix
+│   │   ├── perf
+│   │   │   ├── RTEAzure-PowerBiDatasetView.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationBudgetAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationEquipmentAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationOPEXCAPEXAnalysis.pbix
+│   │   │   ├── RTEAzure-PowerBiSimulationScenarioComparison.pbix
+│   │   │   └── RTEAzure-PowerBiSimulationScenariosOverview.pbix
+│   │   └── staging
+│   └── scenario
+│       ├── dev
+│       │   └── Asset_Staging_Demo_Dashboard_Baseline.pbix
+│       ├── perf
+│       │   └── RTEAzure-PowerBiScenarioView.pbix
+│       └── staging
+├── .gitignore
+├── LICENSE.md
 └── README.md
+```
