@@ -22,5 +22,5 @@ runs:
     - name: Push ACR simulator image
       run: |
         cd ${{ inputs.folder }}
-        babylon azure acr push -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image MTOR:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_${{ env.PLATFORM_ID }}Z
+        babylon azure acr push -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image mtor:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_${{ env.PLATFORM_ID }}Z
       shell: bash
