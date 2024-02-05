@@ -23,5 +23,4 @@ runs:
       run: |
         cd ${{ inputs.folder }}
         babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
-        docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} mtor:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_Z
       shell: bash
