@@ -5,6 +5,9 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
+  platforms:
+    description: 'List of platforms to initialize'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -21,5 +24,7 @@ runs:
     - name: setup babylon
       run: |
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
-        babylon config init -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        for platform in ${{ inputs.platforms }}; do
+          babylon config init -c ${{ env.CONTEXT_ID }} -p $platform
+        done
       shell: bash

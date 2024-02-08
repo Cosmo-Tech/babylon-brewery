@@ -15,6 +15,9 @@ inputs:
     description: 'simulator_version'
     required: true
     default: ''
+  platforms:
+    description: 'List of platforms to initialize'
+    required: true
 
 runs:
   using: "composite"
@@ -22,5 +25,8 @@ runs:
     - name: Pull ACR simulator image
       run: |
         cd ${{ inputs.folder }}
-        babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
+        for platform in ${{ inputs.platforms }}; do
+          if [ "$platform" == "${{ env.PLATFORM_ID }}" ]; then 
+            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
+        done
       shell: bash
