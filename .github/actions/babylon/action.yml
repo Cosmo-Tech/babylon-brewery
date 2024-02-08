@@ -24,7 +24,8 @@ runs:
     - name: setup babylon
       run: |
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
-        for platform in ${{ inputs.platforms }}; do
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
           babylon config init -c ${{ env.CONTEXT_ID }} -p $platform
         done
       shell: bash

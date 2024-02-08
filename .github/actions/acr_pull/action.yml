@@ -25,7 +25,8 @@ runs:
     - name: Pull ACR simulator image
       run: |
         cd ${{ inputs.folder }}
-        for platform in ${{ inputs.platforms }}; do
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
           if [ "$platform" == "${{ env.PLATFORM_ID }}" ]; then 
             babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
           fi

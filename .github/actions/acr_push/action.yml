@@ -25,9 +25,11 @@ runs:
     - name: Push ACR simulator image
       run: |
         cd ${{ inputs.folder }}
-        for platform in ${{ inputs.platforms }}; do
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
           if [ "$platform" != "${{ env.PLATFORM_ID }}" ]; then 
             docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} ${{ inputs.simulator_image_docker }}:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_$platformZ
             babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_$platformZ
+          fi
         done
       shell: bash
