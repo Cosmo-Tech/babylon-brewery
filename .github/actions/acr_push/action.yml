@@ -37,7 +37,7 @@ runs:
         for platform in "${platforms_array[@]}"; do
           if [ "$platform" != "${{ env.PLATFORM_ID }}" ]; then 
             docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} ${{ inputs.simulator_image_docker }}:ASSET_${{ env.major_version_tag }}.${{ env.minor_version_tag }}.${{ env.patch_version_tag }}
-            babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_ASSET_${{ env.major_version_tag }}.${{ env.minor_version_tag }}.${{ env.patch_version_tag }}
+            babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_${{ env.major_version_tag }}.${{ env.minor_version_tag }}.${{ env.patch_version_tag }}
           fi
         done
       shell: bash
