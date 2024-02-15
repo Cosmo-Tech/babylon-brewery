@@ -26,8 +26,8 @@ runs:
         cd ${{ inputs.folder }}
         IFS=',' read -ra platforms_array <<< "${{ inputs.platform }}"
         for platform in "${platforms_array[@]}"; do
-          if [ "$platform" == "${{ env.PLATFORM_ID }}" ]; then 
-            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
+          if [ "$platform" == "dev" ]; then 
+            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
           fi
         done
       shell: bash
