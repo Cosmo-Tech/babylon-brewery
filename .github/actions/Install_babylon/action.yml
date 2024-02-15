@@ -17,15 +17,10 @@ runs:
         python-version: "3.9"
     - name: install babylon packages
       run: |
-        git clone https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
-        pip install -e . --quiet
-      shell: bash
-
-    - name: setup babylon
-      run: |
-        mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
         IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
         for platform in "${platforms_array[@]}"; do
-          babylon config init -c ${{ env.CONTEXT_ID }} -p $platform
+          git clone https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
+          pip install -e . --quiet
         done
       shell: bash
+

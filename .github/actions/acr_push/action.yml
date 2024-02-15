@@ -18,7 +18,15 @@ inputs:
   platforms:
     description: 'List of platforms to initialize'
     required: true
-
+  major_version_tag:
+    description: 'major_version_tag'
+    required: true
+  minor_version_tag:
+    description: 'minor_version_tag'
+    required: true
+  patch_version_tag:
+    description: 'patch_version_tag'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -28,8 +36,8 @@ runs:
         IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
         for platform in "${platforms_array[@]}"; do
           if [ "$platform" != "${{ env.PLATFORM_ID }}" ]; then 
-            docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} ${{ inputs.simulator_image_docker }}:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_$platformZ
-            babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_14_$(date +"%Y-%m-%d-%Hh%M")_$platformZ
+            docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} ${{ inputs.simulator_image_docker }}:ASSET_${{ env.major_version_tag }}.${{ env.minor_version_tag }}.${{ env.patch_version_tag }}
+            babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_ASSET_${{ env.major_version_tag }}.${{ env.minor_version_tag }}.${{ env.patch_version_tag }}
           fi
         done
       shell: bash
