@@ -260,7 +260,6 @@ jobs:
         with: 
           item: WP03_RunTemplate
 
-<<<<<<< HEAD
 ```
 Actions
 ---
@@ -275,7 +274,7 @@ Actions
           pi: ${{ steps.baby_wpi.outputs.wpi }}
 git clone https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
 pip install -e . --quiet
-```
+
 ### init commands (configuration)
     
 ```bash
@@ -336,6 +335,7 @@ babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_
 babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --item ${{ inputs.item }}
 
 This action will create an organization with a default name, such as `o-mmv8evy0x69`.
+```
 
 >run
 
@@ -363,16 +363,11 @@ babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resou
 babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type "Microsoft.Storage/storageAccounts" --role-id %azure%storage_blob_reader --principal-id %platform%principal_id --resource-name %azure%storage_account_name
 ```
 
-<<<<<<< HEAD
 ### Azure Data Explorer database (adx action) 
 ---
-=======
->configuration
->>>>>>> 0a6c9a9 (chore: update repo)
 
 The `ADX action` creates an adx databese it depends on the `file.kql` that is located in the `adx` directory. The adx directory contains three subdirectories, this is how it is structured:
 
-<<<<<<< HEAD
 ```bash
 .
 ├── adx
@@ -382,16 +377,10 @@ The `ADX action` creates an adx databese it depends on the `file.kql` that is lo
 │   │   └── 00-Initialisation_ASSET.kql
 │   └── staging
 ```
-=======
-    platform file:
-        resource_group_name: <RESOURCE_GROUP_NAME>
-        resources_location: <RESOURCES_LOCATION>
->>>>>>> 0a6c9a9 (chore: update repo)
 
 >run
 
 ```bash
-<<<<<<< HEAD
 - name: Azure Data Explorer deployment
   env:
     ADX: ${{ github.action_path }}/../../../adx/${{ env.PLATFORM_ID }}
@@ -405,22 +394,6 @@ The `ADX action` creates an adx databese it depends on the `file.kql` that is lo
        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type App --role Admin %platform%principal_id
       
        babylon azure adx script run-folder $ADX -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-=======
-babylon azure adt instance create -s
-
-<!-- permissions adt-->
-<!-- Azure Digital Twins Data Owner: bcd981a7-7f74-457b-83e1-cceb9e632ffe -->
-<!-- Azure Digital Twins Data Reader: d57506d4-4c8d-48b1-8587-93c323f6a5a3 -->
-<!-- ObjectId / PrincipalId Platform: 87267e78-0cff-4bd7-a4c5-8a68727f8cb7 -->
-<!-- if -pi -> default csm_object_platform_id -->
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri d57506d4-4c8d-48b1-8587-93c323f6a5a3
-
-babylon azure adt model upload dtdl/
-
-<!-- Principal Id WebApp -->
-babylon azure permission set -rt Microsoft.DigitalTwins/digitalTwinsInstances -ri bcd981a7-7f74-457b-83e1-cceb9e632ffe --select-webapp
->>>>>>> 0a6c9a9 (chore: update repo)
 ```
 
 ## Create a EventHub (eventhub action)
@@ -540,30 +513,19 @@ This action will create a connector depending on the specified type, such as `st
 
 >run
 
-<<<<<<< HEAD
 ```bash
 babylon api connectors payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type
 
 babylon api connectors create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --version $version 
 ```
-=======
->configuration
->>>>>>> 0a6c9a9 (chore: update repo)
 
 ## Create a Dataset (dataset action)
 
-<<<<<<< HEAD
 This action will create a dataset depending on the specified type, such as `storage`, `adt`, or `twin` dataset. It will also update the payload file by adding the correct path to all CSV files using the `sed` command.
-=======
-    platform file:
-        adx_cluster_name: <ADX_CLUSTER_NAME>
-        adx_cluster_object_id: <PRINCIPAL_ID>
->>>>>>> 0a6c9a9 (chore: update repo)
 
 >run
 
 ```bash
-<<<<<<< HEAD
 babylon api datasets create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --output .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml 
 
 dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api dataset.storage_id)
@@ -571,51 +533,11 @@ dataset_id=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID 
 sed -i "s/%DATASET%/$dataset_id/g" .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml
 
 babylon api datasets update -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file .payload/${{ env.CONTEXT_ID }}.${{ env.PLATFORM_ID }}.dataset.storage.yaml --type $type $dataset_id
-=======
-babylon azure adx database create -s
-babylon azure adx script run-folder adx
-<!-- permission cosmo platform ADX database : default csm_object_platform_id-->
-babylon azure adx permission set -t App -r Admin
-
-<!-- set key eventhub on workspace -->
-rg=$(babylon config get-variable deploy "resource_group_name")
-org=$(babylon config get-variable deploy "organization_id")
-wk=$(babylon config get-variable deploy "workspace_key")
-namespace=$(echo $org-$wk | tr [:upper:] [:lower:])
-babylon config set-variable secrets eventhub.key $(az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $namespace --name <ROOT_KEY> --query primaryKey | jq -r '')
-babylon api workspace setkey
->>>>>>> 0a6c9a9 (chore: update repo)
 ```
 
 ## Create a Solution (solution action)
 
-<<<<<<< HEAD
 This action will create a solution.
-=======
-## Azure Event Hub namespaces
----
-
->configuration
-
-    API: .payload_templates/arm
-
->run
-
-```bash
-babylon azure arm runtmp -f API/eventhub_deploy.json
-<!-- Event Hub Namespaces permissions-->
-<!-- Azure Event Hubs Data Receiver: a638d3c7-ab3a-418d-83e6-5f17a39d4fde -->
-<!-- Azure Event Hubs Data Sender  : 2b629674-e913-4c01-ae53-ef4638d8f975 -->
-<!-- Principal Id ADX Cluster -->
-babylon azure permission set -rt Microsoft.EventHub/Namespaces -pi <ADX_CLUSTER_PRINCIPAL_ID> -ri a638d3c7-ab3a-418d-83e6-5f17a39d4fde
-babylon azure permission set -rt Microsoft.EventHub/Namespaces -ri 2b629674-e913-4c01-ae53-ef4638d8f975
-
-babylon azure adx connections create "ProbesMeasures" JSON -tn "ProbesMeasures" 
-babylon azure adx connections create "ScenarioMetaData" CSV -tn "ScenarioMetadata" 
-babylon azure adx connections create "ScenarioRun" JSON -tn "SimulationTotalFacts" 
-babylon azure adx connections create "ScenarioRunMetaData" CSV -tn "ScenarioRunMetadata"
-```
->>>>>>> 0a6c9a9 (chore: update repo)
 
 ```bash
 babylon api solutions create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
@@ -630,15 +552,7 @@ babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFO
 
 babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
 
-<<<<<<< HEAD
 babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
-=======
->run
-
-```bash
-babylon powerbi deploy-workspace <WORKSPACE_NAME> -f <POWERBI_REPORT_PATH> -p ADX_DATABASE <DATABASE_NAME> -p ADX_CLUSTER <CLUSTER_NAME>
-```
->>>>>>> 0a6c9a9 (chore: update repo)
 
 babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
 ```
@@ -657,15 +571,7 @@ The `upload_dataset` action uploads all CSV files to a blob container. It depend
 │   └── staging
 ```
 
-<<<<<<< HEAD
 >run
-=======
-    deploy file:
-        deployment_name: <DEPLOYMENT_NAME>
-        webapp_location: <RESOURCE_LOCATION>
-        webapp_repository: <GITHUB_REPOSITORY_URL>
-        webapp_repository_branch: <BRANCH>
->>>>>>> 0a6c9a9 (chore: update repo)
 
 ```bash
 - name: Upload dataset
@@ -681,7 +587,6 @@ The `upload_dataset` action uploads all CSV files to a blob container. It depend
 ### Upload handlers (upload_handlers action)
 ---
 
-<<<<<<< HEAD
 3 handlers are executed in `cloud` mode, meaning outside the Docker image of the simulator: `parameter handler`, `prerun`, and `postrun`. They need to be deployed on the platform. The `upload_handlers` depends on parameter handler, prerun, and postrun, that are zipped in the `handlers` directory. The handlers directory contains three subdirectories. This is how it is structured:
 
 ```bash
@@ -723,40 +628,6 @@ database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_
 eventkey=$(az eventhubs namespace authorization-rule keys list -g ${{ inputs.resource_group }} --namespace-name $database_name --name RootManageSharedAccessKey --query primaryKey)
 
 babylon hvac set project eventhub $eventkey -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-=======
-> manual operation
-
-    - create PAT with repo and workflow scopes
-    help : https://cosmo-tech.github.io/Babylon-End-User-Doc/2.1.0/commands/webapp_deploy/
-   
-```bash
-<!-- on webapp_repository_branch -->
-git config --global pull.rebase true
-git config --global init.defaultBranch main
-git config --global user.name <USERNAME>
-git config --global user.email <EMAIL>
-cd <BABYLON_WORKING_DIR> ; mkdir webapp; cd webapp
-git init
-echo "# empty_webapp" >> README.md
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://Cosmo-Tech:<PAT>@github.com/<REPO_SOURCE>.git
-git remote add upstream https://oauth2:<PAT>@github.com/<REPO_DESTINATION>.git
-git remote set-url upstream --push "NO"
-git fetch --all
-git checkout -B <BRANCH_REPO_DESTINATION> <TAG_REPO_SOURCE>
-rm -r .github/
-git add .; git commit -m 'first commit'
-git push origin <BRANCH_REPO_DESTINATION> -f
-```
-   
->run
-
-```bash
-babylon config set-variable secrets github.token <GITHUB_TOKEN>
-babylon webapp deploy --enbale-powerbi --enable-azfunc --azf_path <AZURE_FUNCTION_DEPLOY_PATH>
->>>>>>> 0a6c9a9 (chore: update repo)
 ```
 
 ### Project Tree
@@ -765,7 +636,6 @@ This is how the project is structured, presenting all the actions and directorie
 
 ```bash
 .
-<<<<<<< HEAD
 ├── adx
 │   ├── dev
 │   │   └── Create.kql
@@ -780,32 +650,16 @@ This is how the project is structured, presenting all the actions and directorie
 │   └── staging
 ├── .github
 │   └── actions
-│       ├── Access_control
-│       │   └── action.yml
 │       ├── adx
 │       │   └── action.yml
 │       ├── azurefunctionkey
 │       │   └── action.yml
 │       ├── babylon
 │       │   └── action.yml
-=======
-├── .github
-│   └── actions
-│       ├── adt
-│       │   └── action.yml
-│       ├── adx
-│       │   └── action.yml
-│       ├── babylon
-│       │   └── action.yml
-│       ├── config
-│       │   ├── action.yml
-│       │   └── set_babylon_config.py
->>>>>>> 0a6c9a9 (chore: update repo)
 │       ├── connector
 │       │   └── action.yml
 │       ├── dataset
 │       │   └── action.yml
-<<<<<<< HEAD
 │       ├── dispatch
 │       │   ├── action.yml
 │       │   └── dispatch.py
@@ -815,97 +669,25 @@ This is how the project is structured, presenting all the actions and directorie
 │       │   └── action.yml
 │       ├── organization
 │       │   └── action.yml
-=======
-│       ├── eventhub
-│       │   └── action.yml
-│       ├── organization
-│       │   └── action.yml
-│       ├── pat
-│       │   └── action.yml
-│       ├── permission
-│       │   └── action.yml
->>>>>>> 0a6c9a9 (chore: update repo)
 │       ├── powerbi
 │       │   └── action.yml
 │       ├── retrieve
 │       │   └── action.yml
-<<<<<<< HEAD
 │       ├── set-variables
 │       │   └── action.yml
-=======
->>>>>>> 0a6c9a9 (chore: update repo)
 │       ├── solution
 │       │   └── action.yml
 │       ├── storage
 │       │   └── action.yml
-<<<<<<< HEAD
 │       ├── upload_dataset
 │       │   └── action.yml
 │       ├── upload_handlers
 │       │   └── action.yml
-=======
->>>>>>> 0a6c9a9 (chore: update repo)
 │       ├── webapp
 │       │   └── action.yml
 │       └── workspace
 │           └── action.yml
-<<<<<<< HEAD
-├── handlers
-│   ├── dev
-│   ├── perf
-│   │   ├── parameters_handler.zip
-│   │   ├── postrun.zip
-│   │   └── prerun.zip
-│   └── staging
-├── powerbi
-│   ├── dashboard
-│   │   ├── dev
-│   │   │   └── asset_dev_dashboard.pbix
-│   │   ├── perf
-│   │   │   ├── RTEAzure-PowerBiDatasetView.pbix
-│   │   │   ├── RTEAzure-PowerBiSimulationBudgetAnalysis.pbix
-│   │   │   ├── RTEAzure-PowerBiSimulationEquipmentAnalysis.pbix
-│   │   │   ├── RTEAzure-PowerBiSimulationOPEXCAPEXAnalysis.pbix
-│   │   │   ├── RTEAzure-PowerBiSimulationScenarioComparison.pbix
-│   │   │   └── RTEAzure-PowerBiSimulationScenariosOverview.pbix
-│   │   └── staging
-│   └── scenario
-│       ├── dev
-│       │   └── Asset_Staging_Demo_Dashboard_Baseline.pbix
-│       ├── perf
-│       │   └── RTEAzure-PowerBiScenarioView.pbix
-│       └── staging
 ├── .gitignore
 ├── LICENSE.md
 └── README.md
-=======
-├── .payload_templates
-│   ├── api
-│   │   ├── connector.adt.yaml
-│   │   ├── connector.storage.yaml
-│   │   ├── dataset.adt.yaml
-│   │   ├── dataset.storage.yaml
-│   │   ├── organization.yaml
-│   │   ├── send_key.yaml
-│   │   ├── solution.yaml
-│   │   └── workspace.yaml
-│   ├── arm
-│   │   ├── azf_deploy.json
-│   │   └── eventhub_deploy.json
-│   ├── tfc
-│   │   ├── workspace_create.json
-│   │   └── workspace_run.json
-│   └── webapp
-│       ├── app_insight.json
-│       ├── app_registration.json
-│       ├── webapp_config.json
-│       ├── webapp_details.json
-│       └── webapp_settings.json
-├── powerbi
-│   └── brewery_report.pbix
-├── README.md
-└── terraform_cloud
-    ├── tfc_variables_create.yaml
-    └── tfc_workspace_create.yaml
->>>>>>> 0a6c9a9 (chore: update repo)
 ```
