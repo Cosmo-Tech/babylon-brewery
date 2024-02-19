@@ -10,7 +10,7 @@ runs:
   steps:
     - name: Upload dataset
       env:
-        DATASET: ${{ github.action_path }}/../../../dataset/${{ env.PLATFORM_ID }}
+        DATASET: ${{ github.workspace }}/dataset/${{ env.PLATFORM_ID }}
       run: |
         cd ${{ inputs.folder }}
         unzip $DATASET/AZURE_REF_DATASETS.zip

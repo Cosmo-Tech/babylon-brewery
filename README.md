@@ -636,18 +636,6 @@ This is how the project is structured, presenting all the actions and directorie
 
 ```bash
 .
-├── adx
-│   ├── dev
-│   │   └── Create.kql
-│   ├── perf
-│   │   └── 00-Initialisation_ASSET.kql
-│   └── staging
-├── dataset
-│   ├── dev
-│   │   └── AZURE_REF_DATASETS.zip
-│   ├── perf
-│   │   └── AZURE_REF_DATASETS.zip
-│   └── staging
 ├── .github
 │   └── actions
 │       ├── adx

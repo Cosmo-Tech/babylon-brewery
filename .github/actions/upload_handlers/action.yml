@@ -14,7 +14,7 @@ runs:
   steps:
     - name: Upload handlers
       env:
-        HANDLERS: ${{ github.action_path }}/../../../handlers/${{ env.PLATFORM_ID }}
+        HANDLERS: ${{ github.workspace }}/handlers/${{ env.PLATFORM_ID }}
       run: |
         cd ${{ inputs.folder }}
         babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} parameters_handler $HANDLERS/parameters_handler.zip
