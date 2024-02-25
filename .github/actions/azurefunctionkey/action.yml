@@ -9,13 +9,23 @@ inputs:
     description: 'resource_group'
     required: true
     default: 'phoenixdev'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Retrieve azure function key
       run: |
-        cd ${{ inputs.folder }}
-        database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} adx database_name) 
-        azf_key=$(az functionapp keys list -g ${{ inputs.resource_group }} -n $database_name --query masterKey)
-        babylon hvac set project func $azf_key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                database_name=$(babylon config get -c ${{ env.CONTEXT_ID }} -p $cleaned_platform adx database_name) 
+                azf_key=$(az functionapp keys list -g ${{ inputs.resource_group }} -n $database_name --query masterKey)
+                babylon hvac set project func $azf_key -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+            fi
+        done
       shell: bash

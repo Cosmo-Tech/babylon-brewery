@@ -5,9 +5,6 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
-  platforms:
-    description: 'List of platforms to initialize'
-    required: true
 runs:
   using: "composite"
   steps:

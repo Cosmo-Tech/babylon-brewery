@@ -9,38 +9,66 @@ inputs:
     description: ''
     required: true
     default: ''
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Event Hub Namespaces, connections and permissions deployment
       run: |
-        cd ${{ inputs.folder }}
-        babylon azure arm run -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --file %templates%/arm/eventhub_deploy.json ${{ inputs.name }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon azure arm run -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --file %templates%/arm/eventhub_deploy.json ${{ inputs.name }}
+            fi
+        done  
       shell: bash
     
     - name: add permissions
       run: |
-        cd ${{ inputs.folder }}
-        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_receiver --principal-id %adx%cluster_principal_id
-        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %platform%principal_id
-        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %babylon%principal_id
-        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-id %azure%team_id --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon azure iam set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_receiver --principal-id %adx%cluster_principal_id
+                babylon azure iam set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %platform%principal_id
+                babylon azure iam set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %babylon%principal_id
+                babylon azure iam set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --principal-id %azure%team_id --principal-type Group --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_contributor_id
+            fi
+        done  
       shell: bash
 
     - name: add consumer group 
       run: |
-        cd ${{ inputs.folder }}
-        babylon azure adx consumer add "adx" "ProbesMeasures" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon azure adx consumer add "adx" "ScenarioMetaData" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon azure adx consumer add "adx" "ScenarioRun" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon azure adx consumer add "adx" "ScenarioRunMetaData" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}       
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon azure adx consumer add "adx" "ProbesMeasures" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon azure adx consumer add "adx" "ScenarioMetaData" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon azure adx consumer add "adx" "ScenarioRun" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon azure adx consumer add "adx" "ScenarioRunMetaData" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform      
+            fi
+        done
       shell: bash
 
     - name: create connections
       run: |
-        cd ${{ inputs.folder }}
-        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ProbesMeasures %adx%database_name --data-format JSON --table-name ProbesMeasures --compression GZip  --consumer-group adx --mapping ProbesMeasuresMapping
-        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioMetaData %adx%database_name --data-format CSV --table-name ScenarioMetadata --consumer-group adx --mapping ScenarioMetadataMapping
-        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioRun %adx%database_name --data-format JSON --table-name SimulationTotalFacts --consumer-group adx --mapping SimulationTotalFactsMapping
-        babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} ScenarioRunMetaData %adx%database_name  --data-format CSV --table-name ScenarioRunMetadata --consumer-group adx --mapping ScenarioRunMetadataMapping
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform ProbesMeasures %adx%database_name --data-format JSON --table-name ProbesMeasures --compression GZip  --consumer-group adx --mapping ProbesMeasuresMapping
+                babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform ScenarioMetaData %adx%database_name --data-format CSV --table-name ScenarioMetadata --consumer-group adx --mapping ScenarioMetadataMapping
+                babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform ScenarioRun %adx%database_name --data-format JSON --table-name SimulationTotalFacts --consumer-group adx --mapping SimulationTotalFactsMapping
+                babylon azure adx connections create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform ScenarioRunMetaData %adx%database_name  --data-format CSV --table-name ScenarioRunMetadata --consumer-group adx --mapping ScenarioRunMetadataMapping
+            fi
+        done
       shell: bash

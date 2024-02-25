@@ -9,6 +9,10 @@ inputs:
     description: 'resource_group'
     required: true
     default: 'phoenixdev'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:

@@ -13,10 +13,10 @@ runs:
   steps:
     - name: setup babylon
       run: |
-        mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
         IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
         for platform in "${platforms_array[@]}"; do
           cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+          mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
           babylon config init -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
         done
       shell: bash

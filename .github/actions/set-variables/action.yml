@@ -64,29 +64,39 @@ inputs:
   api:
     description: 'control set api version'
     default: 'true'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Setup environment variables
       run: |
-        cd ${{ inputs.folder }}
-        babylon config set azure email "${{ inputs.email }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set azure user_principal_id "${{ inputs.user_principal_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set api workspace_key "${{ inputs.workspace_key }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set powerbi dashboard_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set powerbi scenario_view -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set azure team_id "${{ inputs.team_id }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set acr simulator_repository "${{ inputs.simulator_image_docker }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set acr simulator_version "${{ inputs.simulator_version }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set azure function_artifact_url "${{ inputs.uri_artifact_zip }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set webapp deployment_name "${{ inputs.deployment_name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set webapp location "${{ inputs.location }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set github branch "${{ inputs.branch_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set github organization "${{ inputs.organization }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --item ${{ inputs.item }}
-        if [ "${{ inputs.api }}" == "true" ]; then
-          babylon config set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} api url ${{ inputs.api_url }}
-        fi
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon config set azure email "${{ inputs.email }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set azure user_principal_id "${{ inputs.user_principal_id }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set api workspace_key "${{ inputs.workspace_key }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set powerbi dashboard_view -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set powerbi scenario_view -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set azure team_id "${{ inputs.team_id }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set acr simulator_repository "${{ inputs.simulator_image_docker }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set acr simulator_version "${{ inputs.simulator_version }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set azure function_artifact_url "${{ inputs.uri_artifact_zip }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set webapp deployment_name "${{ inputs.deployment_name }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set webapp location "${{ inputs.location }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set github branch "${{ inputs.branch_to }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set github organization "${{ inputs.organization }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set github repository "${{ inputs.repo_to }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon config set api run_templates -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --item ${{ inputs.item }}
+                if [ "${{ inputs.api }}" == "true" ]; then
+                  babylon config set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform api url ${{ inputs.api_url }}
+                fi
+            fi
+        done
       shell: bash
 
