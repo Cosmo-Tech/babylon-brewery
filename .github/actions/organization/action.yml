@@ -17,14 +17,24 @@ inputs:
     description: 'Organization role security'
     required: true
     default: 'admin'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Create organization object
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon api organizations payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon api organizations create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon api organizations security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon api organizations payload create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon api organizations create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon api organizations security add -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --email ${{ inputs.email }} --role ${{ inputs.role }}
+            fi
+        done  
       shell: bash

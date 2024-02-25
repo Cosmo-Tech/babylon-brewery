@@ -1,33 +1,74 @@
 name: Pull Image from Azure Container Registry
-
-description: Pulles image from Azure Container Registry
-
+description: Pull image from Azure Container Registry
 inputs:
-  folder:
-    description: 'Working-dir folder'
+  platform_or_list_of_Platforms:
+    description: 'User should input either a single platform or a list of platforms to initialize Ex: "dev, perf, staging ...."'
     required: true
-    default: 'personal'
-  simulator_image_docker:
-    description: 'simulator_image_docker'
-    required: true
-    default: ''
-  simulator_version:
-    description: 'simulator_version'
+  simulator_image_docker_or_list_of_Images:
+    description: 'User should input either a Docker image of the simulator or a list of images Ex:"simulator_simulator, asset_simulators ..."'
     required: true
     default: ''
-  platform:
-    description: 'platform to pull from'
+  simulator_version_or_list_of_Versions:
+    description: 'User should input either the version of the simulator or a list of versions Ex:"ASSET_Test_2023-05-03-09h38-31Z..."'
     required: true
+    default: ''
+  tag_or_list_of_tags:
+    description: 'User should input either the tag of the simulator image or a list of tags Ex:"ASSET_v14.2.1, ASSET_v15.0.1 ..."'
+    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
-    - name: Pull ACR simulator image
+    - name: Pull from ACR simulator image
       run: |
-        cd ${{ inputs.folder }}
-        IFS=',' read -ra platforms_array <<< "${{ inputs.platform }}"
-        for platform in "${platforms_array[@]}"; do
-          if [ "$platform" == "dev" ]; then 
-            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }}
-          fi
-        done
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platform_or_list_of_Platforms }}"
+        IFS=',' read -ra list_of_images_simulator <<< "${{ inputs.simulator_image_docker_or_list_of_Images }}"
+        IFS=',' read -ra list_of_version_simulator <<< "${{ inputs.simulator_version_or_list_of_Versions }}"
+        IFS=',' read -ra list_of_tags <<< "${{ inputs.tag_or_list_of_tags }}"
+
+
+        length_platforms=${#platforms_array[@]}
+        length_list_images_simulator=${#list_of_images_simulator[@]}
+        length_versions_simulator=${#list_of_version_simulator[@]}
+        length_tags=${#list_of_tags[@]}
+
+        if [ $length_platforms -eq 1 ] && [ $length_list_images_simulator -eq 1 ] && [ $length_versions_simulator -eq 1 ] && [ $length_tags -eq 1 ]; then
+            babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p $platforms_array --image $list_of_images_simulator:$list_of_version_simulator
+            docker tag $list_of_images_simulator:$list_of_version_simulator $list_of_images_simulator:$list_of_tags
+        else
+            for platform in "${platforms_array[@]}"; do
+                cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+                if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                    babylon azure list -c ${{ env.CONTEXT_ID }} -p $platform > ${PWD}/babylon_acr_logs.txt
+                    LOG_FILE=${PWD}/babylon_acr_logs.txt
+                    extract_repositories_and_versions() {
+                        while IFS= read -r line; do
+                            if [[ $line == *"•"* ]]; then
+                                repository=$(echo "$line" | cut -d ":" -f 1 | sed 's/•//g' | tr -d '[:space:]')
+                                version_line=$(echo "$line" | cut -d ":" -f 2 | sed 's/^[[:space:]]*//' | sed "s/^\['//" | sed "s/^\']//")
+                                for image in "${list_of_images_simulator[@]}"; do
+                                    cleaned_image=$(echo "$image" | sed 's/ *//g')
+                                    if [ "$cleaned_image" == "$repository" ]; then
+                                        IFS=', ' read -r -a version_array <<< "$version_line"
+                                        for version in "${version_array[@]}"; do
+                                            version_log=$(echo "$version" | sed 's/[]]//' | sed "s/^'//" | sed "s/'$//")
+                                            index=0
+                                            for version_user in "${list_of_version_simulator[@]}"; do
+                                                cleaned_version=$(echo "$version_user" | sed 's/ *//g')
+                                                if [ "$cleaned_version" == "$version_log" ]; then
+                                                  babylon azure acr pull -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --image $cleaned_image:$cleaned_version
+                                                  docker tag $cleaned_image:$cleaned_version $cleaned_image:$(echo ${list_of_tags[$index]} | sed 's/ //g')
+                                                fi
+                                                index=$((index + 1))
+                                            done
+                                        done
+                                    fi
+                                done
+                            fi
+                        done < "$LOG_FILE"
+                    }
+                    extract_repositories_and_versions
+                fi
+            done
+        fi
       shell: bash

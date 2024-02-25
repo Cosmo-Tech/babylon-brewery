@@ -16,6 +16,7 @@ runs:
         mkdir ${{ inputs.folder }}; cd ${{ inputs.folder }}
         IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
         for platform in "${platforms_array[@]}"; do
-          babylon config init -c ${{ env.CONTEXT_ID }} -p $platform
+          cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+          babylon config init -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
         done
       shell: bash

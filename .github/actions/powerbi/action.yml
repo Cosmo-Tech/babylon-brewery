@@ -13,6 +13,10 @@ inputs:
     description: 'Workspace Powerbi Name scenario'
     required: true
     default: ''
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -21,8 +25,14 @@ runs:
         powerbi_dashboard_view: ${{ github.workspace }}/powerbi/dashboard/${{ env.PLATFORM_ID }}
         powerbi_scenario_view: ${{ github.workspace }}/powerbi/scenario/${{ env.PLATFORM_ID }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type dashboard_view --folder $powerbi_dashboard_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
-        babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type scenario_view --folder $powerbi_scenario_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon powerbi workspace deploy "${{ inputs.workspace_name_dashboard }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --type dashboard_view --folder $powerbi_dashboard_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
+                babylon powerbi workspace deploy "${{ inputs.workspace_name_scenario }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --type scenario_view --folder $powerbi_scenario_view/ --override --parameter Database %adx%database_name --parameter Kusto %adx%cluster_uri
+            fi
+        done  
       shell: bash
 

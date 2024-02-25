@@ -1,43 +1,61 @@
 name: Push Image to Azure Container Registry
-
-description: Pushes image to Azure Container Registry
-
+description: Push image to Azure Container Registry
 inputs:
-  folder:
-    description: 'Working-dir folder'
-    required: true
-    default: 'personal'
-  simulator_image_docker:
-    description: 'simulator_image_docker'
+  platform_or_list_of_Platforms:
+    description: 'User should input either a single platform or a list of platforms to initialize Ex: "dev, perf, staging ...."'
     required: true
     default: ''
-  simulator_version:
-    description: 'simulator_version'
+  simulator_image_docker_or_list_of_Images:
+    description: 'User should input either a Docker image of the simulator or a list of images Ex:"simulator_simulator, asset_simulators ..."'
     required: true
     default: ''
-  platforms:
-    description: 'List of platforms to initialize'
+  tag_or_list_of_tags:
+    description: 'User should input either a single tags or a list of tags Ex: "[ASSET_14.2.1], [ASSET_14.2.2], [ASSET_14.2.3]...."'
     required: true
-  major_version_tag:
-    description: 'major_version_tag'
-    required: true
-  minor_version_tag:
-    description: 'minor_version_tag'
-    required: true
-  patch_version_tag:
-    description: 'patch_version_tag'
-    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
-    - name: Push ACR simulator image
+    - name: Push to ACR simulator image
       run: |
-        cd ${{ inputs.folder }}
-        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
-        for platform in "${platforms_array[@]}"; do
-          if [ "$platform" != "${{ env.PLATFORM_ID }}" ]; then 
-            docker tag ${{ inputs.simulator_image_docker }}:${{ inputs.simulator_version }} ${{ inputs.simulator_image_docker }}:ASSET_${{ inputs.major_version_tag }}.${{ inputs.minor_version_tag }}.${{ inputs.patch_version_tag }}
-            babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $platform --image ${{ inputs.simulator_image_docker }}:ASSET_${{ inputs.major_version_tag }}.${{ inputs.minor_version_tag }}.${{ inputs.patch_version_tag }}
-          fi
-        done
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platform_or_list_of_Platforms }}"
+        IFS=',' read -ra list_of_images_simulator <<< "${{ inputs.simulator_image_docker_or_list_of_Images }}"
+        IFS=',' read -ra list_of_tags <<< "${{ inputs.tag_or_list_of_tags }}"
+
+        length_list_images_simulator=${#list_of_images_simulator[@]}
+        length_tags=${#list_of_tags[@]}
+
+        if [ $length_list_images_simulator -eq 1 ] && [ $length_tags -eq 1 ]; then
+            for platform in "${platforms_array[@]}"; do
+                cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+                babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --image $list_of_images_simulator:$list_of_tags
+            done
+        else
+            for platform in "${platforms_array[@]}"; do
+                cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+                if [ "$cleaned_platform" != "${{ env.PLATFORM_ID }}" ]; then
+                    docker images > ${PWD}/docker_images_logs.txt
+                    LOG_FILE=${PWD}/docker_images_logs.txt
+                    extract_repositories_and_tags() {
+                        while IFS= read -r line; do
+                            repository=$(echo "$line" | awk '{print $1}')
+                            tag=$(echo "$line" | awk '{print $2}')
+                            for image in "${list_of_images_simulator[@]}"; do
+                                for verison in "${list_of_tags[@]}"; do
+                                    cleaned_image=$(echo "$image" | sed 's/ *//g')
+                                    cleaned_version=$(echo "$verison" | sed 's/ *//g')
+                                    if [ "$repository:$tag" == "$cleaned_image:$cleaned_version" ]; then
+                                        babylon azure acr push -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --image $repository:$tag
+                                    fi
+                                done
+                            done
+                        done < "$LOG_FILE"
+                    }
+                    extract_repositories_and_tags
+                fi
+            done
+        fi
       shell: bash
+
+
+      

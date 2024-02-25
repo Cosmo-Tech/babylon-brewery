@@ -17,15 +17,25 @@ inputs:
     description: 'Workspace role security'
     required: true
     default: 'Admin'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Workspace deployment
       if: ${{ inputs.name != '' && inputs.email != '' }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --email ${{ inputs.email }} --role ${{ inputs.role }}
-        babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon api workspaces payload create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon api workspaces create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon api workspaces security add -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --email ${{ inputs.email }} --role ${{ inputs.role }}
+                babylon api workspaces send-key -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+            fi
+        done  
       shell: bash

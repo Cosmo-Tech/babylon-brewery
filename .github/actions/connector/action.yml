@@ -17,6 +17,10 @@ inputs:
     description: 'connector name'
     required: true
     default: ''
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 outputs:
   connectorType:
     description: 'The type of connector'
@@ -30,7 +34,13 @@ runs:
         type: ${{ inputs.type }}
         version: ${{ inputs.version }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon api connectors payload create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type
-        babylon api connectors create "$name" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --type $type --version $version 
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon api connectors payload create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --type $type
+                babylon api connectors create "$name" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --type $type --version $version 
+            fi
+        done
       shell: bash

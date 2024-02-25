@@ -9,6 +9,10 @@ inputs:
     description: 'item'
     required: true
     default: ''
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
@@ -16,8 +20,14 @@ runs:
       env:
         HANDLERS: ${{ github.workspace }}/handlers/${{ env.PLATFORM_ID }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} parameters_handler $HANDLERS/parameters_handler.zip
-        babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} prerun $HANDLERS/prerun.zip
-        babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} postrun $HANDLERS/postrun.zip
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p $cleaned_platform parameters_handler $HANDLERS/parameters_handler.zip
+                babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p $cleaned_platform prerun $HANDLERS/prerun.zip
+                babylon api solutions handler upload --run-template ${{ inputs.item }} -c ${{ env.CONTEXT_ID }} -p $cleaned_platform postrun $HANDLERS/postrun.zip
+            fi
+        done  
       shell: bash

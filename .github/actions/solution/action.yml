@@ -9,11 +9,21 @@ inputs:
     description: "Solution Name"
     required: true
     default: ""
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: Solution deployment
       run: |
-        cd ${{ inputs.folder }}
-        babylon api solutions create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        FS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon api solutions create "${{ inputs.name }}" -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+            fi
+        done  
       shell: bash

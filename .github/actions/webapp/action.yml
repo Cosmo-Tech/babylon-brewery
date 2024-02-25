@@ -5,13 +5,23 @@ inputs:
     description: 'Working-dir folder'
     required: true
     default: 'personal'
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
 runs:
   using: "composite"
   steps:
     - name: webapp deployment with powerbi and azure function
       run: |
-        cd ${{ inputs.folder }}
-        babylon webapp deploy -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} 
-        babylon powerbi workspace user add -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} %app%principal_id App Admin
-        babylon azure iam set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %app%principal_id 
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon webapp deploy -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon powerbi workspace user add -c ${{ env.CONTEXT_ID }} -p $cleaned_platform %app%principal_id App Admin
+                babylon azure iam set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --resource-type Microsoft.EventHub/Namespaces --role-id %azure%eventhub_built_data_sender --principal-id %app%principal_id 
+            fi
+        done  
       shell: bash

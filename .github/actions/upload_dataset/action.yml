@@ -12,7 +12,13 @@ runs:
       env:
         DATASET: ${{ github.workspace }}/dataset/${{ env.PLATFORM_ID }}
       run: |
-        cd ${{ inputs.folder }}
-        unzip $DATASET/AZURE_REF_DATASETS.zip
-        babylon azure storage container upload -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --folder ./AZURE_REF_DATASETS
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                unzip $DATASET/AZURE_REF_DATASETS.zip
+                babylon azure storage container upload -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --folder ./AZURE_REF_DATASETS
+            fi
+        done  
       shell: bash

@@ -4,7 +4,12 @@ inputs:
   folder:
     description: 'Working-dir folder'
     required: true
-    default: 'personal'
+    default: 'personal'  
+  platforms:
+    description: 'List of platforms'
+    required: true
+    default: 'dev'
+  
 runs:
   using: "composite"
   steps:
@@ -12,10 +17,16 @@ runs:
       env:
         ADX: ${{ github.workspace }}/adx/${{ env.PLATFORM_ID }}
       run: |
-        cd ${{ inputs.folder }}
-        babylon azure adx database create -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type User --role Admin %azure%user_principal_id  
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type Group --role Admin %azure%team_id
-        babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }} --principal-type App --role Admin %platform%principal_id
-        babylon azure adx script run-folder $ADX -c ${{ env.CONTEXT_ID }} -p ${{ env.PLATFORM_ID }}
+        IFS=',' read -ra platforms_array <<< "${{ inputs.platforms }}"
+        for platform in "${platforms_array[@]}"; do
+            cleaned_platform=$(echo "$platform" | sed 's/ *//g')
+            if [ "$cleaned_platform" == "${{ env.PLATFORM_ID }}" ]; then
+                cd ${{ inputs.folder }}
+                babylon azure adx database create -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+                babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --principal-type User --role Admin %azure%user_principal_id  
+                babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --principal-type Group --role Admin %azure%team_id
+                babylon azure adx permission set -c ${{ env.CONTEXT_ID }} -p $cleaned_platform --principal-type App --role Admin %platform%principal_id
+                babylon azure adx script run-folder $ADX -c ${{ env.CONTEXT_ID }} -p $cleaned_platform
+            fi
+        done
       shell: bash
