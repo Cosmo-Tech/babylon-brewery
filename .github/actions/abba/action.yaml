@@ -1,0 +1,17 @@
+name: Run ABBA 
+description: Run multiple scenarios (ABBA)
+inputs:
+  directory_project:
+    description: 'User should enter the name of the directory of the project they want to deploy. For example: project'
+    required: true
+    default: 'project'
+runs:
+  using: "composite"
+  steps:
+    - name: Babylon abba command
+      env:
+        csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
+        csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_type.csv
+      run: |
+        babylon abba $csv_input $csv_type
+      shell: bash
