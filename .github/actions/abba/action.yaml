@@ -11,14 +11,14 @@ runs:
     - name: Babylon abba command
       env:
         csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
-        csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_type.csv
+        csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
       run: |
         babylon abba run $csv_input $csv_type
       shell: bash
     - name: Babylon check results
       env:
         csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
-        csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_type.csv
+        csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
       run: |
         sleep 60
         babylon abba check $csv_input $csv_type
