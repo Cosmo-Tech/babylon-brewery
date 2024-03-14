@@ -21,6 +21,11 @@ runs:
         csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
       run: |
         sleep 60
-        babylon abba check $csv_input $csv_type
+        babylon abba check back.csv $csv_type
       shell: bash
+    - name: report
+      uses: actions/upload-artifact@v3
+      with:
+        name: report
+        path: simulation_report.html
 
