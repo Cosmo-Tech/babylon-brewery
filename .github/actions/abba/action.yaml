@@ -5,6 +5,10 @@ inputs:
     description: 'User should enter the name of the directory of the project they want to deploy. For example: project'
     required: true
     default: 'project'
+  sleep_duration_seconds:
+    description: 'Duration in seconds to sleep before checking simulation results'
+    required: false
+    default: "60"
 runs:
   using: "composite"
   steps:
@@ -20,7 +24,7 @@ runs:
         csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
         csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
       run: |
-        sleep 60
+        sleep: ${{ inputs.sleep_duration_seconds }}
         babylon abba check back.csv $csv_type
       shell: bash
     - name: Report the results
