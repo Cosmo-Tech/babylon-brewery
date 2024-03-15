@@ -1,4 +1,4 @@
-name: Babylon namesapce Action
+name: Babylon namespace Action
 description: Initialize babylon configuration in given folder
 inputs:
   CONTEXT_ID:
@@ -16,7 +16,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: setup namesapce babylon
+    - name: setup namespace babylon
       run: |
           babylon namespace use -c ${{ inputs.CONTEXT_ID }} -p ${{ inputs.PLATFORM_ID }} -s ${{ inputs.STATE_ID }}
       shell: bash
