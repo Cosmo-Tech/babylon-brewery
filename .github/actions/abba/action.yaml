@@ -8,14 +8,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Babylon abba command
+    - name: Run a series of simulations
       env:
         csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
         csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
       run: |
         babylon abba run $csv_input $csv_type
       shell: bash
-    - name: Babylon check results
+    - name: Check the simulation results
       env:
         csv_input: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_input.csv
         csv_type: ${{ github.workspace }}/${{ inputs.directory_project }}/abba/abba_types.csv
@@ -23,7 +23,7 @@ runs:
         sleep 60
         babylon abba check back.csv $csv_type
       shell: bash
-    - name: report
+    - name: Report the results
       uses: actions/upload-artifact@v3
       with:
         name: report
