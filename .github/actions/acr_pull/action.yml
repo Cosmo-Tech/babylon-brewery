@@ -17,5 +17,5 @@ runs:
   steps:
     - name: Pull simulator image from Azure Container Registry 
       run: |
-          babylon azure acr pull --image ${{ inputs.docker_simulator_image }}:${{ inputs.docker_simulator_version }}
+          babylon azure acr pull --image ${{ inputs.docker_simulator_image }}:${{ inputs.docker_simulator_version }} -p $platform
       shell: bash
