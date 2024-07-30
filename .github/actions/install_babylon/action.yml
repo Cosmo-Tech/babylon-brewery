@@ -12,6 +12,7 @@ runs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.11"
+        cache: 'pip'
     - name: install babylon packages
       run: |
         git clone -b ${{ inputs.branch }} https://github.com/Cosmo-Tech/Babylon.git babylon;cd babylon
